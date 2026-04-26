@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dragon Master Pro - Supreme Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Montserrat:wght@600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #ffcc00;
+            --red: #ff1100;
+            --neon-blue: #00f2ff;
+            --panel-bg: rgba(0, 0, 0, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: white; font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* --- HEADER & JACKPOT --- */
+        .header { background: #000; padding: 10px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; z-index: 100; }
+        .balance-box { background: #111; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); }
+        .balance-box span { color: var(--gold); font-family: 'Orbitron'; font-weight: 900; font-size: 14px; }
+        
+        .jackpot-header { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); text-align: center; width: 100%; z-index: 50; }
+        .jackpot-header p { font-size: 10px; color: var(--gold); letter-spacing: 2px; }
+        .jackpot-header b { font-family: 'Orbitron'; font-size: 22px; color: #fff; text-shadow: 0 0 10px var(--red); }
+
+        /* --- SLOT AREA --- */
+        .slot-machine { flex: 1; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle, #1a0a0a 0%, #000 100%); position: relative; }
+        .reels-frame { display: flex; gap: 5px; background: #000; padding: 10px; border: 4px solid #222; border-radius: 10px; position: relative; box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); overflow: hidden; width: 95vw; max-width: 600px; height: 320px; }
+        .payline-guide { position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: rgba(0, 242, 255, 0.4); z-index: 5; pointer-events: none; }
+        .reel { flex: 1; height: 100%; position: relative; background: #050505; border-radius: 5px; overflow: hidden; }
+        .symbol-container { position: absolute; width: 100%; top: -1100px; display: flex; flex-direction: column; align-items: center; }
+        .symbol { width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 45px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .win-active { animation: pulseWin 0.5s infinite alternate; background: radial-gradient(circle, rgba(255,204,0,0.3) 0%, transparent 70%); z-index: 10; }
+        @keyframes pulseWin { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+
+        /* --- CONTROLS --- */
+        .controls { background: var(--panel-bg); padding: 15px; display: grid; grid-template-columns: 1fr 1.5fr 1fr; align-items: center; border-top: 2px solid var(--gold); }
+        
+        .bet-ctrl { display: flex; align-items: center; justify-content: center; gap: 10px; background: #111; padding: 5px; border-radius: 10px; border: 1px solid #333; }
+        .bet-btn { background: #222; border: 1px solid var(--gold); color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-weight: 900; }
+        
+        .spin-section { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .btn-spin { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #444; background: radial-gradient(circle, var(--red) 0%, #600 100%); color: white; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(255, 0, 0, 0.4); }
+        .btn-spin.auto-active { border-color: var(--neon-blue); animation: spinGlow 1s infinite; }
+        @keyframes spinGlow { 0% { box-shadow: 0 0 10px var(--neon-blue); } 50% { box-shadow: 0 0 25px var(--neon-blue); } 100% { box-shadow: 0 0 10px var(--neon-blue); } }
+
+        .win-notif { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); background: rgba(0,0,0,0.95); border: 3px solid var(--gold); padding: 40px; border-radius: 30px; text-align: center; z-index: 1000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .win-notif.show { transform: translate(-50%, -50%) scale(1); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="balance-box">SALDO: <span id="balance">1.000.000</span></div>
+        <div style="font-family: 'Orbitron'; font-size: 10px; color: var(--gold);">AUTOSPIN READY</div>
+    </div>
+
+    <div class="jackpot-header">
+        <p>GRAND JACKPOT</p>
+        <b id="jackpot-val">IDR 8.888.888.888</b>
+    </div>
+
+    <div class="slot-machine">
+        <div class="reels-frame">
+            <div class="payline-guide"></div>
+            <div class="reel"><div class="symbol-container" id="reel0"></div></div>
+            <div class="reel"><div class="symbol-container" id="reel1"></div></div>
+            <div class="reel"><div class="symbol-container" id="reel2"></div></div>
+            <div class="reel"><div class="symbol-container" id="reel3"></div></div>
+            <div class="reel"><div class="symbol-container" id="reel4"></div></div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="info-panel">
+            <p style="font-size: 9px; color: #888; text-align: center;">TARUHAN</p>
+            <div class="bet-ctrl">
+                <button class="bet-btn" onclick="changeBet(-1000)">-</button>
+                <b id="currentBet" style="font-size: 14px; font-family: 'Orbitron';">10.000</b>
+                <button class="bet-btn" onclick="changeBet(1000)">+</button>
+            </div>
+        </div>
+
+        <div class="spin-section">
+            <button class="btn-spin" id="spinBtn" onclick="toggleSpin()">SPIN</button>
+            <label style="font-size: 9px; color: var(--neon-blue); margin-top: 5px;">
+                <input type="checkbox" id="autoCheck"> AUTO SPIN
+            </label>
+        </div>
+
+        <div class="info-panel" style="text-align: center;">
+            <p style="font-size: 9px; color: #888;">MENANG</p>
+            <b id="lastWin" style="color: var(--gold); font-family: 'Orbitron';">0</b>
+        </div>
+    </div>
+
+    <div class="win-notif" id="winOverlay">
+        <h1 id="winStatus" style="font-family: 'Orbitron'; color: var(--gold);">BIG WIN!</h1>
+        <h2 id="winTotal" style="font-size: 40px; margin: 10px 0;">0</h2>
+        <p id="winMsg" style="color: var(--neon-blue);">NAGA MEMBERKATI!</p>
+    </div>
+
+    <script>
+        const SYMBOLS = ["🐲", "💎", "🔥", "📀", "⚔️", "🔱", "⭐", "🧧"]; // 🧧 adalah Scatter
+        let balance = 1000000;
+        let bet = 10000;
+        let isSpinning = false;
+        let autoSpin = false;
+        let jackpot = 8888888888;
+
+        function init() {
+            for (let i = 0; i < 5; i++) {
+                const container = document.getElementById(`reel${i}`);
+                for (let j = 0; j < 30; j++) {
+                    const div = document.createElement('div');
+                    div.className = 'symbol';
+                    div.innerText = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                    container.appendChild(div);
+                }
+            }
+            setInterval(() => {
+                jackpot += Math.floor(Math.random() * 5000);
+                document.getElementById('jackpot-val').innerText = "IDR " + jackpot.toLocaleString('id-ID');
+            }, 200);
+        }
+
+        function changeBet(val) {
+            if (isSpinning) return;
+            bet = Math.max(1000, bet + val);
+            document.getElementById('currentBet').innerText = bet.toLocaleString('id-ID');
+        }
+
+        function toggleSpin() {
+            autoSpin = document.getElementById('autoCheck').checked;
+            if (isSpinning) return;
+            startSpin();
+        }
+
+        async function startSpin() {
+            if (balance < bet) {
+                alert("Saldo Habis!");
+                autoSpin = false;
+                document.getElementById('autoCheck').checked = false;
+                return;
+            }
+
+            isSpinning = true;
+            balance -= bet;
+            updateUI();
+            
+            const spinBtn = document.getElementById('spinBtn');
+            spinBtn.disabled = true;
+            if(autoSpin) spinBtn.classList.add('auto-active');
+            
+            document.getElementById('winOverlay').classList.remove('show');
+            document.querySelectorAll('.symbol').forEach(s => s.classList.remove('win-active'));
+
+            const promises = [];
+            for (let i = 0; i < 5; i++) {
+                promises.push(animateReel(i));
+            }
+
+            const results = await Promise.all(promises);
+            checkLogic(results);
+        }
+
+        function animateReel(id) {
+            return new Promise(resolve => {
+                const container = document.getElementById(`reel${id}`);
+                const duration = 1000 + (id * 300);
+                
+                for(let i=0; i<15; i++) {
+                    const div = document.createElement('div');
+                    div.className = 'symbol';
+                    div.innerText = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+                    container.prepend(div);
+                }
+
+                container.style.transition = `top ${duration}ms cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
+                container.style.top = "0px";
+
+                setTimeout(() => {
+                    const finalSymbols = container.querySelectorAll('.symbol');
+                    const result = finalSymbols[1].innerText;
+                    container.style.transition = 'none';
+                    container.style.top = "-1100px";
+                    resolve({symbol: result, el: finalSymbols[1]});
+                }, duration);
+            });
+        }
+
+        function checkLogic(res) {
+            const symbolsOnly = res.map(r => r.symbol);
+            let winFactor = 0;
+            let isScatter = symbolsOnly.filter(s => s === "🧧").length >= 3;
+
+            // Simple Logic: Match from left
+            if (symbolsOnly[0] === symbolsOnly[1] && symbolsOnly[1] === symbolsOnly[2]) {
+                winFactor = 5;
+                res[0].el.classList.add('win-active'); res[1].el.classList.add('win-active'); res[2].el.classList.add('win-active');
+                if (symbolsOnly[3] === symbolsOnly[0]) { winFactor = 20; res[3].el.classList.add('win-active'); }
+                if (symbolsOnly[4] === symbolsOnly[0]) { winFactor = 100; res[4].el.classList.add('win-active'); }
+            }
+
+            if (isScatter) {
+                showWin("FREE SCATTER!", bet * 10, "BONUS MODE AKTIF!");
+                balance += (bet * 10);
+            } else if (winFactor > 0) {
+                const totalWin = bet * winFactor;
+                balance += totalWin;
+                showWin("WIN!", totalWin, "NAGA SENANG!");
+            }
+
+            updateUI();
+            isSpinning = false;
+            document.getElementById('spinBtn').disabled = false;
+
+            if (autoSpin && document.getElementById('autoCheck').checked) {
+                setTimeout(startSpin, 1500);
+            } else {
+                document.getElementById('spinBtn').classList.remove('auto-active');
+            }
+        }
+
+        function showWin(status, amt, msg) {
+            const overlay = document.getElementById('winOverlay');
+            document.getElementById('winStatus').innerText = status;
+            document.getElementById('winTotal').innerText = amt.toLocaleString('id-ID');
+            document.getElementById('winMsg').innerText = msg;
+            document.getElementById('lastWin').innerText = amt.toLocaleString('id-ID');
+            overlay.classList.add('show');
+            setTimeout(() => overlay.classList.remove('show'), 2500);
+        }
+
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toLocaleString('id-ID');
+        }
+
+        init();
+    </script>
+</body>
+</html>

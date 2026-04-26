@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubisoft Style - Action Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #000; color: white; overflow-x: hidden; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+        }
+
+        .video-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1;
+        }
+
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 100%);
+            z-index: 0;
+        }
+
+        .content { z-index: 1; max-width: 600px; }
+        .game-logo { font-size: 4rem; text-transform: uppercase; font-weight: 900; margin-bottom: 20px; }
+        
+        .cta-container { display: flex; gap: 20px; }
+        .btn {
+            padding: 15px 35px; border: 2px solid white; cursor: pointer;
+            font-weight: bold; text-transform: uppercase; transition: 0.3s;
+            text-decoration: none; display: inline-block;
+        }
+        .btn-primary { background: white; color: black; }
+        .btn-primary:hover { background: transparent; color: white; }
+        .btn-secondary { background: transparent; color: white; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+        /* --- MODAL VIDEO (Untuk Watch Trailer) --- */
+        .modal {
+            display: none; position: fixed; z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); align-items: center; justify-content: center;
+        }
+        .modal-content { width: 80%; max-width: 800px; position: relative; }
+        .close-modal {
+            position: absolute; top: -40px; right: 0;
+            color: white; font-size: 30px; cursor: pointer;
+        }
+
+        /* --- PRE-ORDER SECTION --- */
+        .preorder-section {
+            padding: 100px 10%; background: #111; text-align: center;
+        }
+        .grid-editions {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px; margin-top: 50px;
+        }
+        .card {
+            background: #222; padding: 30px; border: 1px solid #444;
+            transition: 0.3s;
+        }
+        .card:hover { border-color: white; transform: translateY(-10px); }
+        .price { font-size: 2rem; font-weight: bold; margin: 20px 0; color: #25d366; }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="latifwibu.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+
+        <div class="content">
+            <h1 class="game-logo">AIBELHADI<br>FAMILY</h1>
+            <p style="margin-bottom: 30px; color: #ccc;">Jadilah legenda wibu dalam penghayalan berkelanjutan. Tulis sejarahmu sendiri.</p>
+            
+            <div class="cta-container">
+                <a href="#preorder" class="btn btn-primary">Pre-Order Now</a>
+                <div class="btn btn-secondary" onclick="openTrailer()">Watch Trailer</div>
+            </div>
+        </div>
+    </section>
+
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTrailer()">&times;</span>
+            <div style="padding-top: 56.25%; position: relative;">
+                <iframe id="trailerVideo" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" 
+                src="" frameborder="0" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <section id="preorder" class="preorder-section">
+        <h2 style="font-size: 2.5rem; text-transform: uppercase;">Pilih Edisi Anda</h2>
+        <p>Dapatkan konten eksklusif dengan memesan sekarang.</p>
+
+        <div class="grid-editions">
+            <div class="card">
+                <h3>Standard Edition</h3>
+                <p style="font-size: 12px; color: #888;">Base Game Only</p>
+                <div class="price">Rp 699.000</div>
+                <a href="#" class="btn btn-secondary" style="width: 100%;">Beli Sekarang</a>
+            </div>
+            <div class="card" style="border-color: gold;">
+                <h3 style="color: gold;">Gold Edition</h3>
+                <p style="font-size: 12px; color: #888;">Base Game + Season Pass</p>
+                <div class="price">Rp 999.000</div>
+                <a href="#" class="btn btn-primary" style="width: 100%; background: gold; border: none;">Beli Sekarang</a>
+            </div>
+            <div class="card">
+                <h3>Ultimate Edition</h3>
+                <p style="font-size: 12px; color: #888;">All DLC + Digital Artbook</p>
+                <div class="price">Rp 1.299.000</div>
+                <a href="#" class="btn btn-secondary" style="width: 100%;">Beli Sekarang</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Fungsi untuk Modal Trailer
+        function openTrailer() {
+            document.getElementById('videoModal').style.display = 'flex';
+            // Masukkan link embed YouTube di sini
+            document.getElementById('trailerVideo').src = "latifwibu.mp4"; // Ganti dengan URL trailer yang sesuai
+        }
+
+        function closeTrailer() {
+            document.getElementById('videoModal').style.display = 'none';
+            document.getElementById('trailerVideo').src = ""; // Stop video saat ditutup
+        }
+
+        // Menutup modal jika klik di luar kotak video
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('videoModal')) {
+                closeTrailer();
+            }
+        }
+    </script>
+
+</body>
+</html>

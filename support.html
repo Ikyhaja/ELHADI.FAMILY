@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bantuan</title>
+    <style>
+        :root {
+            --accent: #00ff88;
+            --bg: #020202;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg); color: white; line-height: 1.6; }
+
+        /* --- HEADER BANTUAN --- */
+        .support-hero {
+            padding: 120px 10% 80px;
+            background: linear-gradient(to bottom, #0a0a0a, var(--bg));
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .support-hero h1 {
+            font-size: 3rem;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        /* Search Bar Ala Game */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 20px 30px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-container input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+        }
+
+        /* --- CATEGORY GRID --- */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 60px 10%;
+        }
+
+        .help-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 40px;
+            text-align: center;
+            transition: 0.4s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .help-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            background: rgba(0, 255, 136, 0.02);
+        }
+
+        .help-card i {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--accent);
+        }
+
+        .help-card h3 {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .help-card p {
+            font-size: 0.85rem;
+            color: #777;
+        }
+
+        /* Dekorasi Sudut */
+        .help-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 10px; height: 10px;
+            border-top: 2px solid var(--accent);
+            border-left: 2px solid var(--accent);
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .help-card:hover::before { opacity: 1; }
+
+        /* --- CONTACT OPTIONS --- */
+        .contact-section {
+            padding: 80px 10%;
+            text-align: center;
+            background: #050505;
+        }
+
+        .contact-box {
+            display: inline-flex;
+            gap: 40px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .contact-method {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border-bottom: 1px solid transparent;
+            padding-bottom: 5px;
+            transition: 0.3s;
+        }
+
+        .contact-method:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Footer Info */
+        .system-status {
+            margin-top: 50px;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: #444;
+        }
+
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 10px var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <section class="support-hero">
+        <p style="color: var(--accent); font-size: 0.7rem; letter-spacing: 5px; margin-bottom: 10px;">ELHADI_HELP_CENTER</p>
+        <h1>BANTUAN TEKNIS</h1>
+        <div class="search-container">
+            <input type="text" placeholder="Cari masalah (contoh: koneksi, aktivasi, akun)..." id="searchInput">
+        </div>
+    </section>
+
+    <section class="help-grid">
+        <div class="help-card">
+            <i>👤</i>
+            <h3>Masalah Akun</h3>
+            <p>Pemulihan kata sandi, verifikasi dua langkah, dan pengaturan profil.</p>
+        </div>
+
+        <div class="help-card">
+            <i>💻</i>
+            <h3>Konektivitas</h3>
+            <p>Panduan troubleshooting jaringan dan status server global.</p>
+        </div>
+
+        <div class="help-card">
+            <i>💰</i>
+            <h3>Pembelian</h3>
+            <p>Informasi transaksi, refund, dan aktivasi kode promo.</p>
+        </div>
+
+        <div class="help-card">
+            <i>🛠️</i>
+            <h3>Teknis Game</h3>
+            <p>Masalah crash, performa (FPS), dan kompatibilitas hardware.</p>
+        </div>
+    </section>
+
+    <section class="contact-section">
+        <h2 style="font-weight: 900; letter-spacing: 3px;">MASIH BUTUH BANTUAN?</h2>
+        <div class="contact-box">
+            <a href="kontak.html" class="contact-method"><span>✉️</span> Kirim keluhan</a>
+            <a href="https://wa.me/6282256458582" class="contact-method"><span>💬</span> Chat WhatsApp</a>
+            <a href="https://instagram.com/ikysaputra.__/" class="contact-method"><span>🐦</span> Instagram Support</a>
+        </div>
+
+        <div class="system-status">
+            <span class="status-dot"></span>

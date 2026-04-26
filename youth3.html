@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI VIDEO | Premium Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --u-blue: #0070ff;
+            --dark-bg: #020202;
+            --sidebar-width: 80px;
+            --glass: rgba(15, 15, 15, 0.85);
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body {
+            margin: 0; font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg); color: white;
+            overflow-x: hidden;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            width: var(--sidebar-width); background: var(--glass);
+            backdrop-filter: blur(20px); display: flex;
+            flex-direction: column; align-items: center;
+            padding: 30px 0; border-right: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+        .sidebar-logo {
+            width: 35px; height: 35px; background: var(--u-blue);
+            clip-path: polygon(50% 0, 100% 100%, 0 100%);
+            margin-bottom: 50px; cursor: pointer; transition: 0.3s;
+        }
+        .sidebar-logo:hover { transform: rotate(180deg); box-shadow: 0 0 20px var(--u-blue); }
+        
+        .nav-item {
+            font-size: 1.5rem; margin: 20px 0; color: rgba(255, 255, 255, 0.3);
+            cursor: pointer; transition: 0.3s;
+        }
+        .nav-item:hover, .nav-item.active { color: var(--u-blue); transform: scale(1.1); text-shadow: 0 0 10px var(--u-blue); }
+
+        /* --- HERO SECTION --- */
+        #top { height: 0; position: absolute; top: 0; }
+        .hero {
+            height: 75vh; position: relative;
+            display: flex; align-items: center;
+            padding-left: calc(var(--sidebar-width) + 5%);
+            overflow: hidden;
+        }
+        .hero-video-bg {
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            transform: translate(-50%, -50%);
+            z-index: -2; filter: brightness(0.4);
+        }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
+        }
+
+        h1 { font-family: 'Orbitron'; font-size: 4rem; margin: 0; text-transform: uppercase; }
+        .hero-tag { color: var(--u-blue); font-weight: 800; letter-spacing: 5px; margin-bottom: 10px; display: block; }
+
+        /* --- CONTROL PANEL (Search & Genre) --- */
+        .control-panel {
+            background: linear-gradient(to bottom, transparent, var(--dark-bg));
+            padding: 40px 5% 20px calc(var(--sidebar-width) + 5%);
+        }
+        .search-input {
+            width: 100%; max-width: 500px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 25px; color: white; font-family: 'Inter';
+            clip-path: polygon(0 0, 95% 0, 100% 25%, 100% 100%, 5% 100%, 0 75%);
+            margin-bottom: 25px; transition: 0.3s;
+        }
+        .search-input:focus { border-color: var(--u-blue); outline: none; background: rgba(255,255,255,0.1); }
+
+        .genre-tabs { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; }
+        .tab {
+            padding: 8px 22px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer;
+            font-size: 0.75rem; font-weight: bold; text-transform: uppercase;
+            letter-spacing: 1px; transition: 0.3s;
+            clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+        }
+        .tab:hover, .tab.active { background: var(--u-blue); color: white; border-color: var(--u-blue); transform: translateY(-3px); }
+
+        /* --- VIDEO GRID --- */
+        .video-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px; padding: 20px 5% 100px calc(var(--sidebar-width) + 5%);
+        }
+        .video-card { background: transparent; cursor: pointer; transition: 0.3s; border-bottom: 2px solid transparent; }
+        .video-card:hover { transform: translateY(-5px); border-color: var(--u-blue); }
+        
+        .thumb-box {
+            position: relative; width: 100%; aspect-ratio: 16/9;
+            background: #111; overflow: hidden;
+        }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .play-hover {
+            position: absolute; inset: 0; background: rgba(0, 112, 255, 0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; opacity: 0; transition: 0.3s;
+        }
+        .video-card:hover .play-hover { opacity: 1; }
+
+        .video-meta { padding: 12px 0; }
+        .video-meta h3 { margin: 0 0 5px 0; font-size: 0.95rem; color: #eee; }
+        .video-meta p { margin: 0; font-size: 0.75rem; color: #666; text-transform: uppercase; }
+
+        /* --- MODAL PLAYER --- */
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            align-items: center; justify-content: center;
+        }
+        .modal-content { width: 90%; max-width: 1000px; position: relative; }
+        video#player { width: 100%; border: 1px solid var(--u-blue); box-shadow: 0 0 50px rgba(0,112,255,0.3); }
+        .close-btn { position: absolute; top: -40px; right: 0; color: white; cursor: pointer; font-family: 'Orbitron'; font-size: 0.8rem; letter-spacing: 2px; }
+
+        /* --- STATUS BAR --- */
+        .status-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 35px;
+            background: var(--u-blue); display: flex; align-items: center;
+            padding: 0 25px; font-size: 0.75rem; font-weight: bold; z-index: 1500;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="top"></div>
+
+    <nav class="sidebar">
+        <div class="sidebar-logo" onclick="goHome()" title="Reset To Home"></div>
+        <div class="nav-item active" id="homeBtn" onclick="goHome()" title="Home">🏠</div>
+        <div class="nav-item" onclick="document.getElementById('searchBox').focus()" title="Search">🎬</div>
+        <div class="nav-item" title="Network">👥</div>
+        <div class="nav-item" title="Settings">⚙️</div>
+    </nav>
+
+    <section class="hero">
+        <video autoplay muted loop playsinline class="hero-video-bg">
+            <source src="lods.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div>
+            <span class="hero-tag">SYSTEM VIDEO DATABASE</span>
+            <h1>ELH4D1 <span style="color: var(--u-blue);">VIDEO</span></h1>
+            <p style="color: #ccc; max-width: 480px; line-height: 1.6;">Pusat kendali media terpadu. Navigasi melalui genre untuk mengakses database core, alim, dan kerandoman elhadi.</p>
+        </div>
+    </section>
+
+    <div class="control-panel">
+        <input type="text" class="search-input" id="searchBox" placeholder="CARI DATABASE..." onkeyup="filterContent()">
+        
+        <div class="genre-tabs">
+            <div class="tab active" onclick="filterGenre('all', this)">Semua</div>
+            <div class="tab" onclick="filterGenre('Kebersamaan', this)">Kebersamaan</div>
+            <div class="tab" onclick="filterGenre('Random', this)">Random</div>
+            <div class="tab" onclick="filterGenre('Alim', this)">Alim</div>
+        </div>
+    </div>
+
+    <div class="video-grid" id="videoGrid">
+        <div class="video-card" data-name="buka bersama di basecamp" data-genre="Kebersamaan" onclick="openPlayer('lods.mp4', 'buka bersama di basecamp')">
+            <div class="thumb-box">
+                <img src="wew.jpeg">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>buka bersama di basecamp Elhadi</h3>
+                <p>Kebersamaan ELHADI.FAMILY</p>
+            </div>
+        </div>
+
+        <div class="video-card" data-name="Random Core" data-genre="Random" onclick="openPlayer('shter.mp4', 'Kerandoman di basecamp')">
+            <div class="thumb-box">
+                <img src="ikyrndm.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>kerandoman dibasecamp</h3>
+                <p>Random</p>
+            </div>
+        </div>
+
+                <div class="video-card" data-name="Madan sok cool" data-genre="Random" onclick="openPlayer('mnvid.mp4', 'madan sok cool')">
+            <div class="thumb-box">
+                <img src="mdncol.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>Madan sok cool</h3>
+                <p>Random</p>
+            </div>
+        </div>
+
+                <div class="video-card" data-name="ELHADI Core" data-genre="Random" onclick="openPlayer('latifwibu.mp4', 'ELHADI core')">
+            <div class="thumb-box">
+                <img src="elkont.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>ELHADI core</h3>
+                <p>Random</p>
+            </div>
+        </div>
+
+                <div class="video-card" data-name="latif Core" data-genre="Alim" onclick="openPlayer('ltif shlt.mp4', 'Latif Sholat')">
+            <div class="thumb-box">
+                <img src="yapping.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>latif sholat</h3>
+                <p>Beliau taubatannasuha</p>
+            </div>
+        </div>
+
+                        <div class="video-card" data-name="wibu asli" data-genre="Random" onclick="openPlayer('asliwibu.mp4', 'wibu asli')">
+            <div class="thumb-box">
+                <img src="gnggng.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>wibu asli</h3>
+                <p>Random</p>
+            </div>
+        </div>
+
+                                <div class="video-card" data-name="konser di murjani" data-genre="Random" onclick="openPlayer('ikydor.mp4', 'konser')">
+            <div class="thumb-box">
+                <img src="knsrt.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>konser di murjani</h3>
+                <p>Random</p>
+            </div>
+        </div>
+
+                <div class="video-card" data-name="tetamu habib" data-genre="Alim" onclick="openPlayer('habib.mp4', 'tetamu habib')">
+            <div class="thumb-box">
+                <img src="bib.JPG">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>tetamu habib</h3>
+                <p>maambil berkah habib</p>
+            </div>
+        </div>
+
+        <div class="video-card" data-name="Spakbor akhirnya taubat" data-genre="Alim" onclick="openPlayer('sholatspakbor.mp4', 'Spakbor akhirnya taubat')">
+            <div class="thumb-box">
+                <img src="sholatspakbor.mp4">
+                <div class="play-hover">▶</div>
+            </div>
+            <div class="video-meta">
+                <h3>Spakbor akhirnya taubat</h3>
+                <p>Beliau toubatannasuha</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closePlayer()">✖ CLOSE INTERFACE</span>
+            <video id="player" controls controlsList="nodownload">
+                <source src="" type="video/mp4">
+            </video>
+            <h2 id="modalTitle" style="font-family: 'Orbitron'; color: var(--u-blue); margin-top: 15px; font-size: 1.2rem;"></h2>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>● ELHADI_OS ONLINE</span>
+        <span style="margin-left: 20px;">V.1.0.0</span>
+        <span style="margin-left: auto;" id="clock">00:00:00</span>
+    </div>
+
+    <script>
+        const modal = document.getElementById('videoModal');
+        const video = document.getElementById('player');
+        const titleEl = document.getElementById('modalTitle');
+        let currentGenre = 'all';
+
+        // FUNGSI UTAMA (HOME)
+        function goHome() {
+            closePlayer();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('searchBox').value = "";
+            const allTab = document.querySelector('.tab[onclick*="all"]');
+            filterGenre('all', allTab);
+        }
+
+        // FUNGSI PLAYER
+        function openPlayer(src, name) {
+            video.src = src;
+            titleEl.innerText = name;
+            modal.style.display = 'flex';
+            video.play();
+        }
+
+        function closePlayer() {
+            video.pause();
+            video.src = "";
+            modal.style.display = 'none';
+        }
+
+        // FUNGSI FILTER
+        function filterGenre(genre, element) {
+            currentGenre = genre;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            filterContent();
+        }
+
+        function filterContent() {
+            let input = document.getElementById('searchBox').value.toLowerCase();
+            let cards = document.getElementsByClassName('video-card');
+
+            for (let card of cards) {
+                let name = card.getAttribute('data-name').toLowerCase();
+                let genre = card.getAttribute('data-genre');
+                let matchesSearch = name.includes(input);
+                let matchesGenre = (currentGenre === 'all' || genre === currentGenre);
+
+                card.style.display = (matchesSearch && matchesGenre) ? "block" : "none";
+            }
+        }
+
+        // JAM REAL-TIME
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        // Tutup modal jika klik background
+        window.onclick = function(e) { if(e.target == modal) closePlayer(); }
+    </script>
+</body>
+</html>

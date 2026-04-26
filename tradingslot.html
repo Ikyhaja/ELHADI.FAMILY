@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trading Slot - Bullish Profit</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bull: #00ffaa;
+            --bear: #ff4d4d;
+            --bg: #0b0e11;
+            --panel: #1e2329;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        
+        body { 
+            background: var(--bg); color: #eaecef; font-family: 'JetBrains Mono', monospace;
+            height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        /* --- HEADER (Market Info) --- */
+        .market-header {
+            padding: 10px 15px; background: var(--panel); border-bottom: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .pair { color: var(--bull); font-weight: 800; font-size: 14px; }
+        .multiplier { color: #f0b90b; font-size: 18px; font-weight: 800; }
+
+        /* --- CHART VIEW --- */
+        .chart-view {
+            flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .candle-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;
+            width: 90%; max-width: 500px; height: 300px; align-items: end;
+        }
+
+        /* --- CANDLESTICK STYLE --- */
+        .candle {
+            width: 100%; border-radius: 2px; position: relative;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: candlePop 0.3s ease-out;
+        }
+        
+        /* Garis Sumbu (Wick) */
+        .candle::before {
+            content: ''; position: absolute; left: 50%; bottom: -10px; top: -10px;
+            width: 2px; background: inherit; transform: translateX(-50%);
+        }
+
+        .bull { background: var(--bull); box-shadow: 0 0 15px rgba(0,255,170,0.4); }
+        .bear { background: var(--bear); box-shadow: 0 0 15px rgba(255,77,77,0.4); }
+
+        @keyframes candlePop { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+        /* --- TRADING INDICATORS (WIN OVERLAY) --- */
+        #tradeOverlay {
+            position: absolute; width: 100%; text-align: center; top: 20%;
+            pointer-events: none; z-index: 10; display: none;
+        }
+        .signal-text {
+            font-size: 50px; font-weight: 800; text-transform: uppercase;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 0; } 50% { opacity: 1; } }
+
+        /* --- FOOTER PANEL --- */
+        .trading-footer {
+            background: var(--panel); padding: 20px;
+            display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center;
+            border-top: 1px solid #333;
+        }
+
+        .btn-trade {
+            width: 90px; height: 45px; border-radius: 4px; border: none;
+            font-weight: 800; cursor: pointer; color: #000; transition: 0.2s;
+        }
+        .btn-buy { background: var(--bull); }
+        .btn-buy:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-buy.disabled { background: #444; color: #888; }
+
+        .label { font-size: 10px; color: #848e9c; margin-bottom: 5px; }
+        .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+        .price-up { color: var(--bull) !important; }
+        .price-down { color: var(--bear) !important; }
+
+    </style>
+</head>
+<body>
+
+    <div class="market-header">
+        <div>
+            <div class="pair">SLOT/IDR +12.5%</div>
+            <div style="font-size: 10px; color: #848e9c;">24h High: 1.500.000</div>
+        </div>
+        <div class="multiplier" id="mText">x1</div>
+    </div>
+
+    <div class="chart-view">
+        <div id="tradeOverlay">
+            <div class="signal-text" id="signalText">PUMP!</div>
+            <div id="signalAmt" style="font-size: 24px; color: #fff;">+50,000</div>
+        </div>
+        <div class="candle-grid" id="grid">
+            </div>
+    </div>
+
+    <div class="trading-footer">
+        <div style="text-align: left;">
+            <div class="label">WALLET BALANCE</div>
+            <div class="value" id="balVal">1.000.000</div>
+            <div style="margin-top: 10px;">
+                <span class="label">MARGIN (BET)</span>
+                <div class="value" id="betVal">10.000</div>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <button class="btn-trade btn-buy" id="spinBtn" onclick="executeTrade()">EXECUTE</button>
+            <div style="margin-top: 10px; font-size: 11px;">
+                <input type="checkbox" id="autoTrade"> AUTO-BOT
+            </div>
+        </div>
+
+        <div style="text-align: right;">
+            <div class="label">LAST PNL</div>
+            <div class="value price-up" id="pnlVal">+0.00</div>
+            <div style="margin-top: 10px;">
+                <button onclick="adjustBet(-2000)" style="padding:2px 8px; background:#333; color:#fff; border:none;">-</button>
+                <button onclick="adjustBet(2000)" style="padding:2px 8px; background:#333; color:#fff; border:none;">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let balance = 1000000;
+        let bet = 10000;
+        let combo = 1;
+        let isTrading = false;
+
+        function init() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for(let i=0; i<5; i++) spawnCandle(Math.random() > 0.5);
+        }
+
+        function spawnCandle(isBull, height = null) {
+            const grid = document.getElementById('grid');
+            const h = height || Math.floor(Math.random() * 150) + 20;
+            const candle = document.createElement('div');
+            candle.className = `candle ${isBull ? 'bull' : 'bear'}`;
+            candle.style.height = h + 'px';
+            
+            if(grid.children.length >= 5) grid.removeChild(grid.firstChild);
+            grid.appendChild(candle);
+        }
+
+        function adjustBet(v) { if(!isTrading) { bet = Math.max(2000, bet+v); document.getElementById('betVal').innerText = bet.toLocaleString(); } }
+
+        function executeTrade() { if(!isTrading) startTrade(); }
+
+        async function startTrade() {
+            if(balance < bet) return alert("Margin Insufficient!");
+            
+            isTrading = true;
+            balance -= bet;
+            combo = 1;
+            updateUI();
+            
+            document.getElementById('spinBtn').classList.add('disabled');
+            document.getElementById('mText').innerText = 'x1';
+
+            // Simulate "Market Volatility"
+            for(let i=0; i<5; i++) {
+                await new Promise(r => setTimeout(r, 100));
+                spawnCandle(Math.random() > 0.6);
+            }
+
+            setTimeout(checkPNL, 500);
+        }
+
+        function checkPNL() {
+            const win = Math.random() > 0.65;
+            
+            if(win) {
+                const winAmt = bet * combo * 2.5;
+                balance += winAmt;
+                
+                // Spawn Massive Bull Candle
+                spawnCandle(true, 250);
+                
+                showSignal(winAmt);
+                document.getElementById('pnlVal').innerText = "+" + winAmt.toLocaleString();
+                document.getElementById('pnlVal').className = "value price-up";
+                
+                combo = (combo === 1) ? 2 : (combo === 2) ? 3 : 5;
+                document.getElementById('mText').innerText = 'x' + combo;
+                
+                updateUI();
+                setTimeout(checkPNL, 1000);
+            } else {
+                isTrading = false;
+                document.getElementById('spinBtn').classList.remove('disabled');
+                if(document.getElementById('autoTrade').checked) setTimeout(startTrade, 1200);
+            }
+        }
+
+        function showSignal(amt) {
+            const overlay = document.getElementById('tradeOverlay');
+            const txt = document.getElementById('signalText');
+            const val = document.getElementById('signalAmt');
+            
+            txt.style.color = "var(--bull)";
+            txt.innerText = combo >= 3 ? "MOON!" : "PUMP!";
+            val.innerText = "+" + amt.toLocaleString();
+            
+            overlay.style.display = 'block';
+            setTimeout(() => overlay.style.display = 'none', 1500);
+        }
+
+        function updateUI() {
+            document.getElementById('balVal').innerText = balance.toLocaleString();
+        }
+
+        init();
+    </script>
+</body>
+</html>

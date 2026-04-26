@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRADING ELHADI</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0e11;
+            --bull: #00c087;
+            --bear: #f84960;
+            --accent: #1e2329;
+            --text-dim: #848e9c;
+            --gold: #f0b90b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg-dark); color: #eaecef; font-family: 'JetBrains Mono', monospace; 
+            height: 100vh; display: grid; grid-template-columns: 1fr 320px;
+            overflow: hidden;
+        }
+
+        /* --- LEFT SIDE: CHART --- */
+        .main-chart { display: flex; flex-direction: column; border-right: 1px solid #2b2f36; }
+
+        .chart-header {
+            padding: 15px 25px; background: rgba(24, 26, 32, 0.5);
+            display: flex; gap: 30px; align-items: center;
+            border-bottom: 1px solid #2b3139;
+        }
+
+        .price-live { font-size: 24px; font-weight: 700; color: var(--bull); transition: 0.2s; }
+        
+        .header-stat { display: flex; flex-direction: column; }
+        .header-stat span { font-size: 11px; color: var(--text-dim); }
+        .header-stat b { font-size: 13px; }
+
+        .chart-container {
+            flex: 1; position: relative; overflow: hidden; padding: 20px;
+            display: flex; align-items: flex-end; gap: 6px;
+            background-image: radial-gradient(#2b3139 0.5px, transparent 0.5px);
+            background-size: 30px 30px;
+        }
+
+        /* Indicator Labels */
+        .indicator-tag {
+            position: absolute; left: 10px; font-size: 10px; font-weight: bold;
+            padding: 2px 5px; border-radius: 3px; background: rgba(0,0,0,0.5);
+        }
+
+        .candle {
+            width: 18px; border-radius: 1px; position: relative;
+            transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .candle::after { /* Wick */
+            content: ''; position: absolute; left: 50%; width: 1px; height: 140%;
+            background: inherit; top: -20%; transform: translateX(-50%); opacity: 0.4;
+        }
+
+        .bull { background: var(--bull); }
+        .bear { background: var(--bear); }
+
+        #trendLine {
+            position: absolute; inset: 0; pointer-events: none;
+            filter: drop-shadow(0 0 5px rgba(0, 192, 135, 0.3));
+        }
+
+        /* --- RIGHT SIDE: ORDER BOOK --- */
+        .side-panel { background: #161a1e; display: flex; flex-direction: column; }
+        .order-book { flex: 1; padding: 15px; display: flex; flex-direction: column; }
+        .book-title { font-size: 12px; margin-bottom: 10px; color: var(--text-dim); font-weight: bold; }
+        
+        .order-row { 
+            display: flex; justify-content: space-between; font-size: 11px; 
+            height: 18px; align-items: center; position: relative; 
+            margin: 1px 0;
+        }
+        .order-row span:first-child { font-weight: bold; }
+        .bar { position: absolute; right: 0; height: 80%; opacity: 0.15; transition: width 0.4s; }
+
+        .footer-stats {
+            height: 80px; background: #1e2329; border-top: 1px solid #2b3139;
+            display: flex; align-items: center; padding: 0 20px; gap: 30px;
+        }
+        .stat-item span { color: var(--text-dim); font-size: 10px; display: block; margin-bottom: 4px; }
+        .stat-item b { font-size: 14px; color: var(--gold); }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .status-dot { width: 8px; height: 8px; background: var(--bull); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1.5s infinite; }
+    </style>
+</head>
+<body>
+
+    <div class="main-chart">
+        <div class="chart-header">
+            <div>
+                <b style="font-size: 18px;">BTC/USDT</b>
+                <div class="price-live" id="mainPrice">64,281.92</div>
+            </div>
+            <div class="header-stat"><span>24h Change</span><b style="color: var(--bull)">+4.25%</b></div>
+            <div class="header-stat"><span>24h High</span><b>65,120.00</b></div>
+            <div class="header-stat"><span>24h Volume(BTC)</span><b>42,105.12</b></div>
+        </div>
+
+        <div class="chart-container" id="chart">
+            <div class="indicator-tag" style="top: 10px; color: var(--gold)">MA(7, 25, 99)</div>
+            <svg id="trendLine" width="100%" height="100%">
+                <path id="pathLine" stroke="var(--gold)" stroke-width="1.5" fill="none"></path>
+            </svg>
+            </div>
+
+        <div class="footer-stats">
+            <div class="stat-item"><span>AVAILABLE BALANCE</span><b>1.2405 ETH</b></div>
+            <div class="stat-item"><span>ESTIMATED PNL</span><b style="color: var(--bull)">+$412.50 (12%)</b></div>
+            <div class="stat-item"><span>ENGINE STATUS</span><b><i class="status-dot"></i>CONNECTED</b></div>
+        </div>
+    </div>
+
+    <div class="side-panel">
+        <div class="order-book">
+            <div class="book-title">ORDER BOOK</div>
+            <div style="display:flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); margin-bottom: 5px;">
+                <span>Price(USDT)</span><span>Amount(BTC)</span>
+            </div>
+            <div id="sellOrders"></div>
+            <div class="price-live" style="font-size: 18px; margin: 12px 0; text-align: center; background: rgba(255,255,255,0.03); padding: 5px 0;" id="midPrice">64,281.92</div>
+            <div id="buyOrders"></div>
+        </div>
+    </div>
+
+    <script>
+        let candles = [];
+        let basePrice = 64281;
+        const container = document.getElementById('chart');
+
+        function updateChart() {
+            const isBull = Math.random() > 0.48;
+            const volatility = Math.floor(Math.random() * 60) + 10;
+            const change = volatility * (isBull ? 1 : -1);
+            basePrice += change;
+
+            // Logika tinggi candle agar lebih proporsional
+            const height = Math.min(Math.max(Math.abs(change) * 2.5, 5), 300);
+            
+            candles.push({ isBull, height, price: basePrice });
+            if (candles.length > 35) candles.shift();
+
+            render();
+        }
+
+        function render() {
+            // Bersihkan candle lama tanpa menghapus SVG
+            const oldCandles = container.querySelectorAll('.candle');
+            oldCandles.forEach(n => n.remove());
+
+            let points = [];
+            const containerHeight = container.offsetHeight;
+
+            candles.forEach((c, i) => {
+                const div = document.createElement('div');
+                div.className = `candle ${c.isBull ? 'bull' : 'bear'}`;
+                div.style.height = `${c.height}px`;
+                container.appendChild(div);
+
+                // Hitung koordinat untuk garis MA (tengah candle)
+                const x = (i * 24) + 30; // 18px width + 6px gap
+                const y = containerHeight - (c.height + 40); // Offset bottom 40px
+                points.push(`${x},${y}`);
+            });
+
+            // Update Teks Harga
+            const priceStr = basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            const mainPriceEl = document.getElementById('mainPrice');
+            mainPriceEl.innerText = priceStr;
+            mainPriceEl.style.color = candles[candles.length-1].isBull ? 'var(--bull)' : 'var(--bear)';
+            document.getElementById('midPrice').innerText = priceStr;
+            document.getElementById('midPrice').style.color = mainPriceEl.style.color;
+
+            // Update Garis MA dengan Smooth Transition
+            if (points.length > 0) {
+                const d = `M ${points.join(' L ')}`;
+                document.getElementById('pathLine').setAttribute('d', d);
+            }
+        }
+
+        function updateOrderBook() {
+            const buy = document.getElementById('buyOrders');
+            const sell = document.getElementById('sellOrders');
+            buy.innerHTML = ''; 
+            sell.innerHTML = '';
+
+            // Generate Sells (Red)
+            for(let i=0; i<12; i++) {
+                const p = (basePrice + (i * 1.2)).toFixed(2);
+                const a = (Math.random() * 1.5).toFixed(4);
+                sell.innerHTML = createOrderRow(p, a, 'var(--bear)') + sell.innerHTML;
+            }
+
+            // Generate Buys (Green)
+            for(let i=0; i<12; i++) {
+                const p = (basePrice - (i * 1.2)).toFixed(2);
+                const a = (Math.random() * 1.5).toFixed(4);
+                buy.innerHTML += createOrderRow(p, a, 'var(--bull)');
+            }
+        }
+
+        function createOrderRow(price, amount, color) {
+            const barWidth = Math.min(amount * 60, 100);
+            return `
+                <div class="order-row">
+                    <span style="color: ${color}">${price}</span>
+                    <span>${amount}</span>
+                    <div class="bar" style="width: ${barWidth}%; background: ${color}"></div>
+                </div>`;
+        }
+
+        // Loop Animasi
+        setInterval(updateChart, 1000);
+        setInterval(updateOrderBook, 500);
+
+        // Init awal
+        for(let i=0; i<30; i++) updateChart();
+        updateOrderBook();
+    </script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURUM VIP | THE PINNACLE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@200;400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-light: #f9e29d;
+            --gold-gradient: linear-gradient(135deg, #8a6d3b 0%, #d4af37 50%, #f9e29d 100%);
+            --black-deep: #050505;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(212, 175, 55, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+        
+        body {
+            background-color: var(--black-deep);
+            color: #d1d1d1;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- BACKGROUND EFFECTS --- */
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at 50% 50%, #1a150a 0%, #050505 100%);
+            z-index: -2;
+        }
+
+        .scanline {
+            position: fixed; inset: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.2) 50%);
+            background-size: 100% 4px;
+            pointer-events: none; z-index: 10;
+        }
+
+        /* --- SPLASH SCREEN --- */
+        #splash {
+            position: fixed; inset: 0; z-index: 2000;
+            background: #000; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: 1.5s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        .logo-container {
+            position: relative; width: 120px; height: 120px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .crown-svg {
+            width: 80px; fill: url(#goldGradient);
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .loader-bar {
+            width: 200px; height: 1px; background: rgba(212, 175, 55, 0.1);
+            margin-top: 40px; position: relative; overflow: hidden;
+        }
+        .loader-progress {
+            position: absolute; width: 40%; height: 100%;
+            background: var(--gold); left: -40%;
+            animation: loading 2s infinite;
+        }
+        @keyframes loading {
+            0% { left: -40%; } 100% { left: 100%; }
+        }
+
+        /* --- LOGIN CARD --- */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 1000;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(40px);
+        }
+
+        .vip-card {
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid var(--border);
+            padding: 60px; width: 450px;
+            text-align: center; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .vip-card h2 {
+            font-family: 'Cinzel', serif; color: var(--gold);
+            font-size: 2rem; letter-spacing: 5px; margin-bottom: 40px;
+        }
+
+        .input-group { position: relative; margin-bottom: 30px; }
+        .input-group input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 0; color: #fff; font-size: 14px;
+            letter-spacing: 2px; transition: 0.3s;
+        }
+        .input-group input:focus { border-bottom-color: var(--gold); }
+
+        .btn-access {
+            background: transparent; border: 1px solid var(--gold);
+            color: var(--gold); padding: 15px 40px;
+            font-family: 'Space Grotesk'; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 4px;
+            transition: 0.4s; position: relative; overflow: hidden;
+        }
+        .btn-access:hover { background: var(--gold); color: #000; }
+
+        /* --- MAIN LOBBY --- */
+        #lobby { display: none; opacity: 0; transition: 2s; height: 100vh; }
+
+        .navbar {
+            position: fixed; left: 0; top: 0; height: 100vh; width: 80px;
+            border-right: 1px solid var(--border);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 0; background: rgba(0,0,0,0.8); z-index: 100;
+        }
+
+        .nav-item {
+            margin-bottom: 40px; color: #444; font-size: 1.2rem;
+            transition: 0.4s; position: relative;
+        }
+        .nav-item.active, .nav-item:hover { color: var(--gold); transform: scale(1.2); }
+
+        .main-stage { margin-left: 80px; padding: 60px; height: 100vh; overflow-y: auto; }
+
+        .hero-title {
+            font-family: 'Cinzel', serif; font-size: 5rem;
+            margin: 0; color: #fff; letter-spacing: -2px;
+        }
+        .gold-text {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* --- GRID SYSTEM --- */
+        .assets-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px; margin-top: 50px;
+        }
+
+        .asset-card {
+            height: 350px; background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative; transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+        .asset-card:hover { border-color: var(--gold); transform: translateY(-15px); }
+        .asset-card img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transition: 0.6s; }
+        .asset-card:hover img { opacity: 0.8; transform: scale(1.1); }
+
+        .status-footer {
+            position: fixed; bottom: 0; left: 80px; right: 0;
+            padding: 15px 40px; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+            font-family: 'Space Grotesk'; font-size: 11px;
+            color: var(--gold); text-transform: uppercase; letter-spacing: 2px;
+            background: rgba(5,5,5,0.9);
+        }
+
+        /* --- SCROLLBAR --- */
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+    <div class="scanline"></div>
+
+    <div id="splash">
+        <div class="logo-container">
+            <svg class="crown-svg" viewBox="0 0 24 24">
+                <defs>
+                    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#8a6d3b" />
+                        <stop offset="50%" style="stop-color:#d4af37" />
+                        <stop offset="100%" style="stop-color:#f9e29d" />
+                    </linearGradient>
+                </defs>
+                <path d="M5,16L3,5L8.5,10L12,4L15.5,10L21,5L19,16H5M19,19C19,19.6 18.6,20 18,20H6C5.4,20 5,19.6 5,19V18H19V19Z" />
+            </svg>
+        </div>
+        <h2 style="font-family: 'Cinzel'; color: var(--gold); letter-spacing: 10px; margin-top: 20px; font-size: 0.8rem;">ESTABLISHING CONNECTION</h2>
+        <div class="loader-bar"><div class="loader-progress"></div></div>
+        <button class="btn-access" style="margin-top: 40px;" onclick="unlockSystem()">ENTER AURUM</button>
+    </div>
+
+    <div id="login-screen">
+        <div class="vip-card">
+            <h2>ACCESS</h2>
+            <div class="input-group">
+                <input type="text" id="uid" placeholder="IDENTITY" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="password" id="ukey" placeholder="PASSKEY">
+            </div>
+            <button class="btn-access" onclick="verifyAccess()">Grant Clearance</button>
+            <p id="msg" style="margin-top: 20px; font-size: 10px; color: #666;"></p>
+        </div>
+    </div>
+
+    <div id="lobby">
+        <nav class="navbar">
+            <div class="nav-item active" title="DASHBOARD">◈</div>
+            <div class="nav-item" title="VAULT">⬡</div>
+            <div class="nav-item" title="NETWORK">🌐</div>
+            <div style="flex-grow: 1;"></div>
+            <div class="nav-item" onclick="location.reload()">⏻</div>
+        </nav>
+
+        <main class="main-stage">
+            <section id="home">
+                <p style="letter-spacing: 10px; color: var(--gold); font-size: 12px; margin-bottom: 20px;">SYSTEM STATUS: ENCRYPTED</p>
+                <h1 class="hero-title">AUTHENTICATED<br><span class="gold-text">VIP ACCESS</span></h1>
+                <p style="max-width: 600px; line-height: 2; margin-top: 30px; font-weight: 200; color: #aaa;">
+                    Selamat datang di ekosistem AURUM. Ini adalah ruang eksklusif yang dirancang untuk mereka yang menghargai privasi dan presisi. Seluruh aktivitas Anda dilindungi oleh protokol keamanan Elhadi Privé.
+                </p>
+
+                <div class="assets-grid">
+                    <div class="asset-card"><img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000"></div>
+                    <div class="asset-card"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000"></div>
+                    <div class="asset-card"><img src="https://images.unsplash.com/photo-1634117622592-114e3024ff27?q=80&w=1000"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="status-footer">
+            <div>NODE: INDONESIA_REGION_01</div>
+            <div id="clock">00:00:00</div>
+            <div>AURUM CORE v2.0.4</div>
+        </footer>
+    </div>
+
+    <script>
+        function unlockSystem() {
+            const s = document.getElementById('splash');
+            s.style.opacity = '0';
+            s.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                s.style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+            }, 1500);
+        }
+
+        function verifyAccess() {
+            const u = document.getElementById('uid').value;
+            const k = document.getElementById('ukey').value;
+            const msg = document.getElementById('msg');
+
+            if(u === "elhadi" && k === "2026") {
+                msg.style.color = "var(--gold)";
+                msg.innerText = "ACCESS GRANTED. SYNCING...";
+                
+                setTimeout(() => {
+                    document.getElementById('login-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('login-screen').style.display = 'none';
+                        const lobby = document.getElementById('lobby');
+                        lobby.style.display = 'block';
+                        setTimeout(() => lobby.style.opacity = '1', 100);
+                    }, 1000);
+                }, 1500);
+            } else {
+                msg.style.color = "#ff4d4d";
+                msg.innerText = "DENIED: INVALID CREDENTIALS";
+                document.querySelector('.vip-card').style.borderColor = "#ff4d4d";
+                setTimeout(() => document.querySelector('.vip-card').style.borderColor = "var(--border)", 1000);
+            }
+        }
+
+        // Realtime Clock
+        setInterval(() => {
+            const time = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            document.getElementById('clock').innerText = time;
+        }, 1000);
+    </script>
+</body>
+</html>

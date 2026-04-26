@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wild Bounty Showdown - Premium Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+SC:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bounty-gold: #ffcc00;
+            --bounty-orange: #ff6600;
+            --wood-dark: #3e2723;
+            --dust: #d7ccc8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+        
+        body { 
+            background: #000; color: white; font-family: 'Segoe UI', sans-serif;
+            height: 100dvh; overflow: hidden; display: flex; flex-direction: column;
+        }
+
+        /* --- MULTIPLIER BAR (Tema Bounty) --- */
+        .header-bar {
+            background: linear-gradient(180deg, #2c1d12, #000);
+            padding: 12px; border-bottom: 2px solid var(--bounty-orange);
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+        }
+        .m-box {
+            text-align: center; font-family: 'Orbitron'; font-size: 20px;
+            color: #5d4037; border: 1.5px solid #3e2723; border-radius: 6px;
+            padding: 5px; transition: all 0.4s;
+        }
+        .m-box.active {
+            color: var(--bounty-gold); border-color: var(--bounty-gold);
+            background: rgba(255, 102, 0, 0.2); transform: scale(1.1);
+            text-shadow: 0 0 10px var(--bounty-orange); box-shadow: 0 0 15px rgba(255,102,0,0.4);
+        }
+
+        /* --- GAME ENGINE --- */
+        .game-canvas {
+            flex: 1; display: flex; justify-content: center; align-items: center;
+            background: radial-gradient(circle at center, #4e342e 0%, #000 100%);
+            position: relative; overflow: hidden;
+        }
+
+        .slot-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+            width: 96%; max-width: 500px; padding: 12px;
+            background: rgba(0,0,0,0.8); border: 2px solid var(--bounty-orange);
+            border-radius: 12px; position: relative; z-index: 2;
+        }
+
+        /* --- TILE STYLING (Bounty Style) --- */
+        .tile {
+            aspect-ratio: 3/4; background: #fff; border-radius: 4px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: clamp(24px, 7vw, 42px); color: #1d1d1d;
+            font-family: 'Noto Sans SC'; position: relative;
+            border-left: 4px solid var(--wood-dark);
+            border-bottom: 6px solid #8d6e63;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+            animation: tileDrop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) both;
+        }
+
+        @keyframes tileDrop {
+            0% { transform: translateY(-500px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .tile.gold-tile {
+            background: linear-gradient(145deg, #ffeb3b, #fbc02d);
+            border-left: 4px solid #ff9800; border-bottom: 6px solid #e65100;
+        }
+
+        .tile.wild-tile {
+            background: radial-gradient(circle, #ffca28, #e65100);
+            color: #fff; border-left: 4px solid #bf360c;
+            border-bottom: 6px solid #3e2723; font-size: 18px; font-weight: 900;
+        }
+
+        .tile.explode { animation: explodeEffect 0.4s forwards; }
+        @keyframes explodeEffect {
+            0% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.4) rotate(10deg); filter: brightness(3) contrast(2); }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* --- ANIMASI JACKPOT / SCATTER OVERLAY --- */
+        #jackpotOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1000;
+            display: none; flex-direction: column; justify-content: center;
+            align-items: center; pointer-events: none;
+        }
+
+        .gold-rain {
+            position: absolute; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/dust.png');
+            filter: sepia(1) saturate(5) hue-rotate(10deg);
+            animation: rain 1s linear infinite;
+        }
+
+        .jackpot-content {
+            z-index: 1001; text-align: center;
+            animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .jackpot-title {
+            font-family: 'Orbitron'; font-size: 50px; color: var(--bounty-gold);
+            text-shadow: 0 0 20px var(--bounty-orange), 0 0 40px #fff;
+            margin-bottom: 10px;
+        }
+
+        @keyframes rain { from { background-position: 0 0; } to { background-position: 0 500px; } }
+        @keyframes zoomIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* --- FOOTER --- */
+        .footer-panel {
+            background: #1a120b; border-top: 3px solid var(--bounty-orange);
+            padding: 15px; display: grid; grid-template-columns: 1fr 1.2fr 1fr; align-items: center;
+        }
+
+        .stat-group { text-align: center; }
+        .stat-group p { font-size: 10px; color: var(--bounty-gold); letter-spacing: 1px; }
+        .stat-group b { font-family: 'Orbitron'; font-size: 14px; color: #fff; }
+
+        .spin-btn-main {
+            width: 80px; height: 80px; border-radius: 50%; border: 4px solid var(--bounty-gold);
+            background: radial-gradient(circle, #ff6600, #3e2723);
+            box-shadow: 0 0 20px rgba(255,102,0,0.5); cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto;
+        }
+
+        .jackpot-shake { animation: extremeShake 0.1s infinite; }
+        @keyframes extremeShake {
+            0% { transform: translate(4px, 4px); }
+            50% { transform: translate(-4px, -4px); }
+            100% { transform: translate(4px, -4px); }
+        }
+    </style>
+</head>
+<body id="gameBody">
+
+    <div id="jackpotOverlay">
+        <div class="gold-rain"></div>
+        <div class="jackpot-content">
+            <div class="jackpot-title" id="jackText">BIG WIN</div>
+            <div id="jackValue" style="font-size: 40px; font-family: 'Orbitron'; color: #fff;">0</div>
+        </div>
+    </div>
+
+    <div class="header-bar">
+        <div class="m-box active" id="m1">x1</div>
+        <div class="m-box" id="m2">x2</div>
+        <div class="m-box" id="m3">x3</div>
+        <div class="m-box" id="m5">x5</div>
+    </div>
+
+    <div class="game-canvas">
+        <div class="slot-grid" id="grid"></div>
+    </div>
+
+    <div class="footer-panel">
+        <div class="stat-group">
+            <p>BET</p>
+            <b id="betDisplay">10.000</b>
+            <div style="margin-top:5px">
+                <button onclick="changeBet(-2000)" style="background:#333; color:white; border:none; width:25px;">-</button>
+                <button onclick="changeBet(2000)" style="background:#333; color:white; border:none; width:25px;">+</button>
+            </div>
+        </div>
+
+        <div class="stat-group">
+            <button class="spin-btn-main" onclick="handleSpin()">
+                <b style="font-size:16px">SPIN</b>
+            </button>
+            <div style="margin-top:5px; font-size:10px;">
+                <input type="checkbox" id="autoCheck"> AUTO
+            </div>
+        </div>
+
+        <div class="stat-group">
+            <p>SALDO</p>
+            <b id="balDisplay">1.000.000</b>
+            <div style="color: var(--bounty-gold); font-size: 11px; margin-top: 5px;">
+                WIN: <span id="winDisplay">0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIKA SAMA DENGAN SEBELUMNYA ---
+        const TILES = ["🤠", "💰", "🔫", "🐎", "🌵", "⭐", "💎", "🍺"];
+        let balance = 1000000;
+        let currentBet = 10000;
+        let comboMultiplier = 1;
+        let isRunning = false;
+
+        function init() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for(let i=0; i<20; i++) spawnTile();
+        }
+
+        function spawnTile() {
+            const grid = document.getElementById('grid');
+            const div = document.createElement('div');
+            div.className = 'tile';
+            if(Math.random() > 0.9) div.classList.add('gold-tile');
+            div.innerText = TILES[Math.floor(Math.random() * TILES.length)];
+            grid.appendChild(div);
+        }
+
+        function changeBet(amt) { if(!isRunning) { currentBet = Math.max(2000, currentBet + amt); document.getElementById('betDisplay').innerText = currentBet.toLocaleString('id-ID'); } }
+
+        function handleSpin() { if(!isRunning) startSequence(); }
+
+        async function startSequence() {
+            if(balance < currentBet) return alert("Saldo Habis!");
+            isRunning = true; balance -= currentBet; comboMultiplier = 1;
+            updateUI(); resetMultiplierUI();
+            document.getElementById('grid').innerHTML = '';
+            for(let i=0; i<20; i++) spawnTile();
+            setTimeout(processCascading, 600);
+        }
+
+        function processCascading() {
+            const tiles = document.querySelectorAll('.tile');
+            const winChance = Math.random() > 0.65;
+
+            if(winChance) {
+                const winCount = Math.floor(Math.random() * 5) + 3;
+                const body = document.getElementById('gameBody');
+                
+                // Efek Getar jika combo naik
+                if(comboMultiplier >= 3) body.classList.add('jackpot-shake');
+
+                for(let i=0; i<winCount; i++) {
+                    const idx = Math.floor(Math.random() * tiles.length);
+                    const t = tiles[idx];
+                    if(t.classList.contains('gold-tile')) {
+                        t.innerText = "WILD";
+                        t.classList.add('wild-tile');
+                    } else {
+                        t.classList.add('explode');
+                    }
+                }
+
+                setTimeout(() => {
+                    body.classList.remove('jackpot-shake');
+                    const winAmount = currentBet * comboMultiplier * 3;
+                    balance += winAmount;
+                    
+                    // TRIGGER OVERLAY SAAT COMBO TINGGI (SCATTER/BIGWIN)
+                    if(comboMultiplier >= 3) {
+                        triggerJackpot(winAmount);
+                    }
+
+                    document.getElementById('winDisplay').innerText = winAmount.toLocaleString('id-ID');
+                    document.querySelectorAll('.explode').forEach(e => e.remove());
+                    for(let i=0; i < (20 - document.querySelectorAll('.tile').length); i++) spawnTile();
+
+                    incrementMultiplier();
+                    updateUI();
+                    setTimeout(processCascading, 800);
+                }, 400);
+            } else {
+                isRunning = false;
+                updateUI();
+                if(document.getElementById('autoCheck').checked) setTimeout(startSequence, 1200);
+            }
+        }
+
+        function triggerJackpot(amt) {
+            const overlay = document.getElementById('jackpotOverlay');
+            const text = document.getElementById('jackText');
+            const val = document.getElementById('jackValue');
+            
+            text.innerText = amt > currentBet * 10 ? "MEGA BOUNTY!" : "BIG WIN!";
+            val.innerText = amt.toLocaleString('id-ID');
+            
+            overlay.style.display = 'flex';
+            document.getElementById('gameBody').classList.add('jackpot-shake');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('gameBody').classList.remove('jackpot-shake');
+            }, 2000);
+        }
+
+        function incrementMultiplier() {
+            if(comboMultiplier === 1) comboMultiplier = 2;
+            else if(comboMultiplier === 2) comboMultiplier = 3;
+            else comboMultiplier = 5;
+            document.querySelectorAll('.m-box').forEach(b => b.classList.remove('active'));
+            document.getElementById('m' + comboMultiplier).classList.add('active');
+        }
+
+        function resetMultiplierUI() {
+            document.querySelectorAll('.m-box').forEach(b => b.classList.remove('active'));
+            document.getElementById('m1').classList.add('active');
+            document.getElementById('winDisplay').innerText = "0";
+        }
+
+        function updateUI() {
+            document.getElementById('balDisplay').innerText = balance.toLocaleString('id-ID');
+        }
+
+        init();
+    </script>
+</body>
+</html>
