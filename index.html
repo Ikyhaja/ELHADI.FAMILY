@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI | LOGIN</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
+        :root {
+            --accent: #00ff88;
+            --text: #ffffff;
+            --bg-dark: #000000;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
+                        url('hh.jpeg');
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* --- INTRO BLUR ANIMATION --- */
+        .main-wrapper {
+            animation: introBlur 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        @keyframes introBlur {
+            0% { filter: blur(20px); opacity: 0; transform: scale(1.1); }
+            100% { filter: blur(0); opacity: 1; transform: scale(1); }
+        }
+
+        .logo-main {
+            font-size: clamp(3rem, 12vw, 6rem);
+            font-weight: 900;
+            letter-spacing: 15px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .logo-main span { color: var(--accent); text-shadow: 0 0 20px rgba(0, 255, 136, 0.4); }
+
+        .sub-tag {
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            margin-bottom: 80px;
+        }
+
+        /* --- TOMBOL MULAI --- */
+        .btn-start {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 20px 60px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            cursor: pointer;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .btn-start:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            letter-spacing: 8px;
+        }
+
+        .btn-start:active { transform: scale(0.95); }
+
+        /* --- LOADING OVERLAY --- */
+        #loading-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 3px solid rgba(0, 255, 136, 0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 25px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Fade Out Anim untuk Transisi */
+        .fade-out {
+            opacity: 0;
+            filter: blur(15px);
+            transform: scale(0.9);
+            transition: 0.8s;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper" id="content">
+        <div class="logo-main">ELH4D1<span>.FAMILY</span></div>
+        <div class="sub-tag">Sebelum anda menjelajah lebih luas terhadap komunitas ini,
+             anda diwajibkan untuk terhubung keserver</div>
+        
+        <button class="btn-start" onclick="triggerLoading()">Mulai</button>
+        
+        <p style="margin-top: 25px; font-size: 0.6rem; opacity: 0.3; letter-spacing: 2px;">
+            KLIK UNTUK MENGHUBUNGKAN KE SERVER
+        </p>
+    </div>
+
+    <div id="loading-screen">
+        <div class="spinner"></div>
+        <div style="letter-spacing: 8px; font-size: 0.8rem; font-weight: 700; color: var(--accent);">
+            SEDANG MENGAKSES SERVER...
+        </div>
+    </div>
+
+    <script>
+        function triggerLoading() {
+            // 1. Efek Blur/Fade Out pada konten utama
+            document.getElementById('content').classList.add('fade-out');
+
+            // 2. Munculkan Loading Screen setelah sedikit delay
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'flex';
+                
+                // 3. Pindah ke halaman login setelah loading selesai
+                setTimeout(() => {
+                    // GANTI 'login.html' sesuai nama file login Anda
+                    window.location.href = "login.html"; 
+                }, 2000); // Durasi loading 2 detik
+
+            }, 600);
+        }
+    </script>
+</body>
+</html>
