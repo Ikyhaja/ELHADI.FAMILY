@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI | Contact Support</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
+        :root {
+            --accent: #00ff88;
+            --text: #ffffff;
+            --panel: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            min-height: 100vh;
+            background-color: #050505;
+            /* Grid Background khas Ubisoft */
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* --- CONTAINER UTAMA --- */
+        .contact-wrapper {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2px;
+            background: var(--border);
+            border: 1px solid var(--border);
+            animation: slideIn 0.8s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        /* --- INFO SIDEBAR (KIRI) --- */
+        .info-sidebar {
+            background: rgba(10, 10, 10, 0.9);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .info-sidebar h2 {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        .contact-item { margin-bottom: 25px; }
+
+        .contact-item label {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .contact-item p { font-size: 0.9rem; opacity: 0.7; font-weight: 300; }
+
+        /* --- FORM AREA (KANAN) --- */
+        .form-area {
+            background: rgba(15, 15, 15, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+        }
+
+        .input-group { margin-bottom: 20px; }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            border-bottom: 1px solid var(--border);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            background: rgba(0, 255, 136, 0.05);
+            border-bottom-color: var(--accent);
+        }
+
+        textarea { height: 120px; resize: none; }
+
+        .btn-send {
+            width: 100%;
+            padding: 18px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-send:hover {
+            background: var(--accent);
+            color: black;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: #555;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .back-link:hover { color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .contact-wrapper { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contact-wrapper">
+        <div class="info-sidebar">
+            <div>
+                <h2>KELUHAN<span>.ELHADI</span></h2>
+                <div class="contact-item">
+                    <label>Pusat Lokasi</label>
+                    <p>Banjarmasin, South Kalimantan<br>Indonesia HQ</p>
+                </div>
+                <div class="contact-item">
+                    <label>SOSIAL MEDIA</label>
+                    <p>rizkysaputra7e@gmail.com<br>Email active</p>
+                </div>
+                <div class="contact-item">
+                    <label>System Status</label>
+                    <p style="color: var(--accent);">● ONLINE // ENCRYPTED</p>
+                </div>
+            </div>
+            <a href="lobby.html" class="back-link">← KEMBALI KE TAMPILAN UTAMA</a>
+        </div>
+
+        <div class="form-area">
+            <div class="input-group">
+                <input type="text" id="wa_name" placeholder="NAMA LENGKAP" required>
+            </div>
+            <div class="input-group">
+                <input type="email" id="wa_email" placeholder="ALAMAT EMAIL" required>
+            </div>
+            <div class="input-group">
+                <textarea id="wa_message" placeholder="PESAN / LAPORAN MASALAH" required></textarea>
+            </div>
+            <button class="btn-send" onclick="sendToWhatsApp()">Kirim Laporan</button>
+        </div>
+    </div>
+
+    <script>
+        function sendToWhatsApp() {
+            const name = document.getElementById('wa_name').value;
+            const email = document.getElementById('wa_email').value;
+            const message = document.getElementById('wa_message').value;
+
+            // GANTI DENGAN NOMOR ANDA
+            const phoneNumber = "6282256458582"; 
+
+            if (name === "" || email === "" || message === "") {
+                alert("Harap lengkapi semua data transmisi.");
+                return;
+            }
+
+            const fullMessage = `*KELUHAN - ELHADI*%0A%0A` +
+                                `*Nama:* ${name}%0A` +
+                                `*Email:* ${email}%0A` +
+                                `*Pesan:* ${message}`;
+
+            const waUrl = `https://wa.me/${phoneNumber}?text=${fullMessage}`;
+            window.open(waUrl, '_blank').focus();
+        }
+    </script>
+</body>
+</html>

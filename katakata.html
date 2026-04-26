@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI Quotes Database</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;900&display=swap');
+
+        :root {
+            --accent: #00ff88;
+            --bg: #050505;
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+
+        body {
+            height: 100vh;
+            background: var(--bg);
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- BACKGROUND CINEMATIC --- */
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 100%),
+                url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) brightness(0.3);
+            z-index: -1;
+        }
+
+        /* --- SCANLINE EFFECT --- */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 40px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(20px);
+        }
+
+        .sys-info {
+            font-size: 0.6rem;
+            letter-spacing: 4px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 12px;
+            text-transform: uppercase;
+        }
+
+        /* --- CONTENT WRAPPER --- */
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 0 60px;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        .nav-list {
+            width: 30%;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .nav-item {
+            padding: 20px 0;
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            position: relative;
+        }
+
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            left: -60px; top: 50%;
+            width: 0; height: 1px;
+            background: var(--accent);
+            transition: 0.5s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #fff;
+            padding-left: 20px;
+        }
+
+        .nav-item.active::before { width: 60px; }
+
+        .nav-item span {
+            font-size: 0.5rem;
+            display: block;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        /* --- VIEWER --- */
+        .viewer {
+            width: 70%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 100px;
+            position: relative;
+        }
+
+        .quote-main {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 100;
+            line-height: 1.1;
+            margin-bottom: 40px;
+            animation: textFocus 1s ease-out;
+        }
+
+        @keyframes textFocus {
+            0% { filter: blur(15px); opacity: 0; letter-spacing: 20px; }
+            100% { filter: blur(0); opacity: 1; letter-spacing: 0; }
+        }
+
+        .quote-sub {
+            font-size: 0.7rem;
+            letter-spacing: 8px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        /* Dekorasi Angka Digital */
+        .digit-decor {
+            position: absolute;
+            bottom: 40px; right: 0;
+            font-size: 5rem;
+            font-weight: 900;
+            opacity: 0.03;
+            user-select: none;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            .container { flex-direction: column; padding: 0 20px; }
+            .nav-list { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+            .viewer { width: 100%; padding: 40px 0; }
+            .quote-main { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-overlay"></div>
+
+    <header>
+        <div class="sys-info">EL HADI // Archive Access</div>
+        <div class="title">ELHADI<span>FAMILY</span></div>
+        <div class="sys-info">BJM_SEC_1.0</div>
+    </header>
+
+    <div class="container">
+        <div class="nav-list">
+            <div class="nav-item active" onclick="updateView(0, this)">
+                <span>kata kata_001</span> latip
+            </div>
+            <div class="nav-item" onclick="updateView(1, this)">
+                <span>kata kata_002</span> latip
+            </div>
+            <div class="nav-item" onclick="updateView(2, this)">
+                <span>kata kata_003</span> latip
+            </div>
+            <div class="nav-item" onclick="updateView(3, this)">
+                <span>kata kata_004</span> latip
+            </div>
+        </div>
+
+        <div class="viewer">
+            <div id="content-box">
+                <p class="quote-main">Nothing is true, everything is permitted.</p>
+                <p class="quote-sub">// Master Assassin</p>
+            </div>
+            <div class="digit-decor" id="bg-digit">01</div>
+        </div>
+    </div>
+
+    <script>
+        const data = [
+            { id: "01", text: "Masa depan adalah milik mereka yang percaya pada keindahan mimpi mereka.", author: "// lathip khadi" },
+            { id: "02", text: "Satu-satunya cara untuk melakukan pekerjaan besar adalah dengan mencintai apa yang Anda lakukan.", author: "// nopal spacebor" },
+            { id: "03", text: "Keamanan bukanlah produk, melainkan proses yang terus berjalan tanpa henti.", author: "// fadhil hengker" },
+            { id: "04", text: "Reality is a program. Rewrite the code.", author: "// Unknown Source" }
+        ];
+
+        function updateView(idx, el) {
+            // Update Active Class
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            // Update Content with Animation
+            const box = document.getElementById('content-box');
+            const digit = document.getElementById('bg-digit');
+            
+            box.style.animation = 'none';
+            box.offsetHeight; // Reset animation
+            box.style.animation = 'textFocus 1s ease-out';
+
+            box.innerHTML = `
+                <p class="quote-main">${data[idx].text}</p>
+                <p class="quote-sub">${data[idx].author}</p>
+            `;
+            digit.innerText = data[idx].id;
+        }
+    </script>
+</body>
+</html>

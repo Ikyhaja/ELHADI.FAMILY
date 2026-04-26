@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI | Security</title>
+    <style>
+        :root {
+            --ubisoft-blue: #0070ff;
+            --dark-bg: #050505;
+            --card-bg: #121212;
+            --border-color: #2a2a2a;
+            --text-secondary: #a0a0a0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--dark-bg);
+            color: white;
+            display: flex;
+        }
+
+        /* Sidebar simple dari sebelumnya */
+        .sidebar {
+            width: 70px;
+            height: 100vh;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 70px;
+            padding: 40px 10%;
+            width: 100%;
+        }
+
+        .header-section {
+            margin-bottom: 40px;
+        }
+
+        .header-section h2 {
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        /* Grid System untuk Menu Keamanan */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card Style ala Ubisoft */
+        .security-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+        }
+
+        .security-card:hover {
+            border-color: var(--ubisoft-blue);
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            color: var(--ubisoft-blue);
+            margin-bottom: 15px;
+        }
+
+        .security-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+
+        .security-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+            margin-bottom: 15px;
+        }
+
+        /* Button Action */
+        .btn-manage {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid var(--ubisoft-blue);
+            padding: 8px 20px;
+            transition: 0.3s;
+        }
+
+        .btn-manage:hover {
+            background-color: var(--ubisoft-blue);
+        }
+
+        /* Line Pemisah */
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 40px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div style="margin-bottom:30px; color:var(--ubisoft-blue); font-weight:bold;">U</div>
+        <div style="margin-bottom:20px; opacity:0.5;">🏠</div>
+        <div style="margin-bottom:20px; opacity:0.5;">🎮</div>
+        <div style="margin-bottom:20px; color:white;">🛡️</div> </div>
+
+    <div class="main-content">
+        <div class="header-section">
+            <p style="color: var(--ubisoft-blue); font-weight: bold; margin-bottom: 5px;">ACCOUNT MANAGEMENT</p>
+            <h2>Keamanan Akun</h2>
+            <p>Atur pengaturan keamanan untuk melindungi akun Anda.</p>
+        </div>
+
+        <div class="security-grid">
+            <div class="security-card">
+                <div class="card-icon">🔐</div>
+                <div class="status-badge">AKTIF</div>
+                <h3>Verifikasi 2-Langkah</h3>
+                <p>Tambahkan lapisan keamanan ekstra pada akun Anda untuk memastikan bahwa Anda adalah satu-satunya orang yang dapat mengaksesnya.</p>
+                <a href="#" class="btn-manage">Kelola</a>
+            </div>
+
+            <div class="security-card">
+                <div class="card-icon">🔑</div>
+                <h3>Kata Sandi</h3>
+                <p>Kami menyarankan Anda untuk mengganti kata sandi secara berkala dan menggunakan kombinasi yang unik.</p>
+                <a href="gantisandi.html" class="btn-manage">Ganti Kata Sandi</a>
+            </div>
+
+            <div class="security-card">
+                <div class="card-icon">📱</div>
+                <h3>Perangkat Terpercaya</h3>
+                <p>Lihat dan kelola perangkat yang tidak memerlukan kode verifikasi saat Anda masuk.</p>
+                <a href="#" class="btn-manage">Lihat Semua</a>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="header-section">
+            <h3>Riwayat Aktivitas</h3>
+            <p style="color: var(--text-secondary);">Lihat di mana dan kapan Anda telah masuk ke akun Anda.</p>
+            <div class="security-card" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong style="display: block;">• Banjarmasin, Indonesia</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Sesi saat ini • Browser Chrome</span>
+                </div>
+                <span style="color: var(--ubisoft-blue); font-size: 0.8rem; font-weight: bold;">LOKASI SAAT INI</span>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

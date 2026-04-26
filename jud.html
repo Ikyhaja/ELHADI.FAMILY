@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI - GRAND MASTER EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Montserrat:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dragon-red: #ff1100;
+            --dragon-gold: #ffcc00;
+            --dragon-neon: #ff0055;
+            --bg-deep: #020b1a;
+            --card-glass: rgba(10, 22, 41, 0.7);
+            --gold-shine: linear-gradient(120deg, transparent, rgba(255,204,0,0.4), transparent);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg-deep); 
+            color: white; 
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top, #1a3a6c 0%, #020b1a 100%);
+        }
+
+        /* --- BACKGROUND PARTICLES --- */
+        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+        .particle { position: absolute; border-radius: 50%; background: var(--dragon-gold); animation: moveUp 12s linear infinite; opacity: 0.4; }
+        @keyframes moveUp { 0% { transform: translateY(110vh); opacity: 0; } 50% { opacity: 0.6; } 100% { transform: translateY(-10vh); opacity: 0; } }
+
+        /* --- HEADER UPGRADE --- */
+        header { 
+            background: rgba(0,0,0,0.95); padding: 18px 5%; border-bottom: 3px solid var(--dragon-gold);
+            display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+        .logo { 
+            font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 24px; 
+            letter-spacing: 3px; color: #fff; animation: dragonFire 1.5s infinite alternate;
+        }
+        .logo span { color: var(--dragon-gold); }
+        @keyframes dragonFire {
+            from { text-shadow: 0 0 10px var(--dragon-red), 0 0 20px var(--dragon-neon); }
+            to { text-shadow: 0 0 20px var(--dragon-gold), 0 0 40px var(--dragon-red); }
+        }
+
+        /* --- BUTTON DEPO SHIMMER --- */
+        .btn-depo {
+            background: linear-gradient(180deg, var(--dragon-red) 0%, #7a0000 100%);
+            color: white; border: none; padding: 10px 25px; font-weight: 900; border-radius: 5px;
+            cursor: pointer; position: relative; overflow: hidden; animation: pulseBtn 1.5s infinite;
+        }
+        .btn-depo::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: var(--gold-shine); animation: shine 3s infinite;
+        }
+        @keyframes shine { 100% { left: 100%; } }
+        @keyframes pulseBtn { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* --- MARQUEE --- */
+        .marquee { background: #7a0000; color: #fff; padding: 6px 0; font-size: 12px; font-weight: 900; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--dragon-gold); }
+        .marquee-inner { display: inline-block; animation: scroll 25s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* --- JACKPOT HD --- */
+        .hero { padding: 30px 20px; text-align: center; position: relative; z-index: 1; }
+        .jackpot-box { 
+            background: linear-gradient(145deg, #000 0%, #111 100%); 
+            border: 3px solid var(--dragon-gold); padding: 30px; border-radius: 25px;
+            box-shadow: 0 0 40px rgba(255, 204, 0, 0.4); position: relative;
+        }
+        .jackpot-box::before {
+            content: "🔥"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 30px;
+        }
+        .amount { font-family: 'Orbitron', sans-serif; font-size: 3rem; color: var(--dragon-gold); text-shadow: 0 0 20px var(--dragon-gold); font-weight: 900; }
+
+        /* --- GAME GRID GLASSMORPHISM --- */
+        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; position: relative; z-index: 1; margin-bottom: 100px; }
+        @media (min-width: 768px) { .game-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .game-card { 
+            background: var(--card-glass); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); 
+            overflow: hidden; transition: 0.4s; backdrop-filter: blur(10px);
+        }
+        .game-card:hover { 
+            transform: translateY(-10px) scale(1.05); 
+            border-color: var(--dragon-gold); 
+            box-shadow: 0 15px 30px rgba(255, 204, 0, 0.3);
+        }
+        .game-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-bottom: 3px solid var(--dragon-red); }
+        .game-card p { padding: 12px; font-size: 13px; font-weight: 900; letter-spacing: 1px; color: #ddd; }
+
+        /* --- FIX POP-UP WINNER (ALWAY ON TOP) --- */
+        #win-popup {
+            position: fixed; left: 20px; bottom: 100px;
+            background: rgba(0, 0, 0, 0.95); border-left: 6px solid #00ff66;
+            border-top: 2px solid var(--dragon-gold); padding: 15px 20px;
+            border-radius: 12px; display: flex; align-items: center; gap: 15px;
+            z-index: 999999; transform: translateX(-180%);
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 40px rgba(0,0,0,1);
+        }
+        #win-popup.show { transform: translateX(0); }
+        .win-avatar { font-size: 30px; filter: drop-shadow(0 0 5px var(--dragon-gold)); }
+        .win-content b { color: #00ff66; font-size: 12px; display: block; text-shadow: 0 0 5px rgba(0,255,102,0.3); }
+        .win-content span { color: var(--dragon-gold); font-weight: 900; font-size: 16px; font-family: 'Orbitron'; }
+
+        /* --- BOTTOM NAV --- */
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: #000; border-top: 3px solid var(--dragon-gold); 
+            display: flex; justify-content: space-around; padding: 15px; z-index: 100000; 
+        }
+        .nav-item { color: #888; text-decoration: none; font-size: 12px; font-weight: 900; text-align: center; }
+        .nav-item.active { color: var(--dragon-gold); text-shadow: 0 0 10px var(--dragon-gold); }
+    </style>
+</head>
+<body>
+
+    <div id="particles"></div>
+
+    <header>
+        <div class="logo">ELHADI<span>FAMILY</span></div>
+        <a href="depojud.html" class="btn-depo">DEPOSIT NOW</a>
+    </header>
+
+    <div class="marquee">
+        <div class="marquee-inner">
+            ⚡ SELAMAT DATANG DI ELHADI FAMILY MASTER - DEPOSIT OTOMATIS 5 DETIK - WD UNLIMITED TANPA BATAS - BONUS PETIR SETIAP HARI ⚡ - PEMULA MENDAPATKAN BONUS SPESIAL SEBESAR 1.000.000.00RP - MAIN SEKARANG DAN RASAKAN KEUNGGULAN KAMI! ⚡
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="jackpot-box">
+            <h2 style="font-size: 14px; letter-spacing: 5px; color: #fff;">GRAND MYSTIC JACKPOT</h2>
+            <div class="amount" id="jackpot">IDR 2.450.120.000</div>
+        </div>
+    </section>
+
+    <div class="game-grid">
+        <div class="game-card"><a href="slo.html"><img src="jud.JPG"><p>ELHADI OF OLYMPUS</p></a></div>
+        <div class="game-card"><a href="mahjong2.html"><img src="jud1.JPG"><p>MAHJONG WAYS 2</p></a></div>
+        <div class="game-card"><a href="blok.html"><img src="blok.JPG"><p>BLOK BLOK</p></a></div>
+        <div class="game-card"><a href="wildbounty.html"><img src="wild.JPG"><p>WILD BOUNTY</p></a></div>
+        <div class="game-card"><a href="tradingslot.html"><img src="wild.JPG"><p>TRADING SLOT</p></a></div>
+    </div>
+
+    <div id="win-popup">
+        <div class="win-avatar" id="w-emoji">🐲</div>
+        <div class="win-content">
+            <b id="w-name">PLAYER***</b>
+            <span id="w-amount">IDR 0,00</span>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">🏠<br>HOME</a>
+        <a href="#" class="nav-item">🎁<br>PROMO</a>
+        <a href="#" class="nav-item" style="color:var(--dragon-red)">🔥<br>HOT</a>
+        <a href="#" class="nav-item">💬<br>CHAT</a>
+    </nav>
+
+    <script>
+        // 1. Partikel Background - Lebih banyak dan lebih cepat
+        const pContainer = document.getElementById('particles');
+        for (let i = 0; i < 50; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.width = p.style.height = (Math.random() * 5 + 2) + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = (Math.random() * 8 + 5) + 's';
+            p.style.animationDelay = Math.random() * 5 + 's';
+            pContainer.appendChild(p);
+        }
+
+        // 2. Jackpot Counter - Lebih agresif
+        let amt = 2450120000;
+        setInterval(() => {
+            amt += Math.floor(Math.random() * 15000);
+            document.getElementById('jackpot').innerText = 'IDR ' + amt.toLocaleString('id-ID');
+        }, 150);
+
+        // 3. LOGIKA POP-UP WINNER
+        const popup = document.getElementById('win-popup');
+        const userTxt = document.getElementById('w-name');
+        const amountTxt = document.getElementById('w-amount');
+        const emojiTxt = document.getElementById('w-emoji');
+
+        const pendaftar = ["FadhilHengker", "MadancoolMasterJP", "nopalgacorr", "faizalsukamendua", "ikhlasrajahoki", "seman777", "darelantijomok", "santuygacor", "hoki12345", "jokowi88", "sultanwinz", "raja7777"];
+        const icons = ["🐲", "🔥", "🧧", "💰", "💎", "⚡"];
+
+        function showWinner() {
+            const name = pendaftar[Math.floor(Math.random() * pendaftar.length)];
+            const icon = icons[Math.floor(Math.random() * icons.length)];
+            const nominal = (Math.random() * (25 - 1) + 1).toFixed(2);
+
+            userTxt.innerText = name + Math.floor(Math.random()*99) + "*** BERHASIL WD";
+            amountTxt.innerText = "IDR " + nominal + "0.000";
+            emojiTxt.innerText = icon;
+
+            popup.classList.add('show');
+            setTimeout(() => { popup.classList.remove('show'); }, 4500);
+        }
+
+        setInterval(showWinner, 8000);
+        setTimeout(showWinner, 2500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #0070ff;
+            --border: rgba(255, 255, 255, 0.1);
+            --bg-card: rgba(255, 255, 255, 0.03);
+        }
+
+        body { background-color: #000; margin: 0; font-family: 'Inter', sans-serif; }
+
+        /* --- UPGRADED CAREER SECTION --- */
+        .career-section {
+            padding: 120px 10%;
+            background: radial-gradient(circle at top right, rgba(0, 112, 255, 0.05), transparent), #000;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animasi Grid yang Lebih Halus */
+        .career-section::before {
+            content: "";
+            position: absolute; top: 0; left: 0; width: 200%; height: 200%;
+            background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.15;
+            z-index: 0;
+            transform: rotate(-5deg);
+            animation: gridMove 60s linear infinite;
+        }
+
+        @keyframes gridMove {
+            from { transform: rotate(-5deg) translateY(0); }
+            to { transform: rotate(-5deg) translateY(-600px); }
+        }
+
+        .career-content {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        /* Text Styling */
+        .career-text h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 0.85;
+            margin-bottom: 30px;
+            letter-spacing: -3px;
+            color: #fff;
+        }
+
+        .career-text h2 span {
+            color: var(--accent);
+            display: block;
+            font-size: 1.2rem;
+            letter-spacing: 12px;
+            margin-top: 15px;
+            text-shadow: 0 0 20px rgba(0, 112, 255, 0.5);
+        }
+
+        /* Modern Job Item */
+        .job-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .job-item {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-decoration: none;
+            color: white;
+            clip-path: polygon(0 0, 95% 0, 100% 25%, 100% 100%, 5% 100%, 0 75%);
+        }
+
+        .job-item:hover {
+            background: rgba(0, 112, 255, 0.1);
+            border-color: var(--accent);
+            transform: scale(1.02) translateX(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .job-info h4 {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 1.2rem;
+            margin: 0;
+            transition: 0.3s;
+        }
+
+        .job-item:hover h4 { color: var(--accent); }
+
+        .job-tags {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        .job-arrow {
+            width: 50px;
+            height: 50px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .job-item:hover .job-arrow {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            transform: rotate(-45deg);
+        }
+
+        /* Studio Stats Upgrade */
+        .studio-stats {
+            margin-top: 60px;
+            display: flex;
+            gap: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .stat-item b {
+            display: block;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .stat-item span {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--accent);
+            letter-spacing: 3px;
+            font-weight: 700;
+        }
+
+        .view-all-btn {
+            display: inline-block;
+            margin-top: 30px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            padding: 12px 0;
+            border-bottom: 2px solid var(--accent);
+            transition: 0.3s;
+        }
+
+        .view-all-btn:hover {
+            letter-spacing: 5px;
+            color: var(--accent);
+        }
+
+        @media (max-width: 1200px) {
+            .career-content { grid-template-columns: 1fr; gap: 60px; }
+            .career-text h2 { font-size: 4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <section id="careers" class="career-section">
+        <div class="career-content">
+            
+            <div class="career-text">
+                <span style="color: var(--accent); letter-spacing: 5px; font-weight: bold; font-size: 0.8rem;">JOIN THE LEGACY</span>
+                <h2>EL HADI <span>DEVELOPMENT</span></h2>
+                <p style="color: #888; margin: 30px 0; max-width: 500px; line-height: 1.8;">
+                    Kami tidak hanya membuat kode; kami melahirkan realitas baru. Jadilah bagian dari revolusi hiburan digital bersama El Hadi Family.
+                </p>
+                
+                <div class="studio-stats">
+                    <div class="stat-item">
+                        <b>14 Orang</b>
+                        <span>ELHADI</span>
+                    </div>
+                    <div class="stat-item">
+                        <b>25 Bulan</b>
+                        <span>Proses Pembuatan</span>
+                    </div>
+                    <div class="stat-item">
+                        <b>100%</b>
+                        <span>Keberhasilan</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="job-list">
+
+                <a href="#" class="job-item">
+                    <div class="job-info">
+                        <h4>LiangAnggang</h4>
+                        <div class="job-tags">
+                            <span class="tag">Developer</span>
+                            <span class="tag">Center</span>
+                        </div>
+                    </div>
+                    <div class="job-arrow">→</div>
+                </a>
+
+                <a href="#" class="job-item">
+                    <div class="job-info">
+                        <h4>UIN ANTASARI 2 BJB</h4>
+                        <div class="job-tags">
+                            <span class="tag">Student</span>
+                            <span class="tag">semester 2</span>
+                        </div>
+                    </div>
+                    <div class="job-arrow">→</div>
+                </a>
+
+                <a href="#" class="job-item">
+                    <div class="job-info">
+                        <h4>ELHADI BASECAMP</h4>
+                        <div class="job-tags">
+                            <span class="tag">LOKTABAT</span>
+                            <span class="tag">UTARA</span>
+                        </div>
+                    </div>
+                    <div class="job-arrow">→</div>
+                </a>
+
+                <div style="text-align: right;">
+                    <a href="#" class="view-all-btn">Discover All Careers</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>
