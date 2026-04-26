@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mahjong Ways 2 - Responsive Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Noto+Sans+SC:wght@900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --jade: #00a86b;
+            --gold: #ffcc00;
+            --dark: #011a10;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+
+        body { 
+            background: #000; 
+            color: white; 
+            font-family: 'Arial', sans-serif; 
+            height: 100vh; 
+            height: 100dvh; /* Dynamic Viewport Height untuk Mobile Browser */
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* --- HEADER / MULTIPLIER (Tinggi Tetap) --- */
+        .multiplier-bar {
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr);
+            background: #000; 
+            padding: 10px; 
+            gap: 5px; 
+            border-bottom: 2px solid var(--jade);
+            height: 60px;
+            align-items: center;
+        }
+        .m-item {
+            text-align: center; 
+            font-family: 'Orbitron'; 
+            font-size: clamp(12px, 4vw, 18px); 
+            color: #333;
+            padding: 4px; 
+            border: 1px solid #222; 
+            border-radius: 4px; 
+            transition: 0.3s;
+        }
+        .m-item.active { 
+            color: var(--gold); 
+            border-color: var(--gold); 
+            background: rgba(255,204,0,0.1); 
+            transform: scale(1.05);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* --- GAME VIEW (Mengambil Sisa Ruang) --- */
+        .game-view {
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            background: radial-gradient(circle, #024a30 0%, #000 100%);
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .grid-container {
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 5px;
+            width: 100%;
+            max-width: 600px; /* Maksimal lebar di Laptop */
+            max-height: 100%; /* Agar tidak terpotong di HP pendek */
+            background: rgba(0,0,0,0.6);
+            padding: 8px; 
+            border: 2px solid var(--jade); 
+            border-radius: 10px;
+        }
+
+        .tile {
+            aspect-ratio: 3/4; 
+            background: #fff; 
+            border-radius: 4px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-size: clamp(20px, 8vw, 45px); /* Font menyesuaikan layar */
+            color: #111; 
+            font-family: 'Noto Sans SC';
+            box-shadow: inset 0 -3px 0 #bbb, 0 3px 5px rgba(0,0,0,0.5);
+            animation: tileFall 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+
+        @keyframes tileFall {
+            0% { transform: translateY(-100%); opacity: 0; filter: blur(5px); }
+            100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+        }
+
+        .tile.explode { animation: tileExplode 0.3s forwards; }
+        @keyframes tileExplode {
+            100% { transform: scale(1.5); filter: brightness(3); opacity: 0; }
+        }
+
+        /* --- PANEL BAWAH (Tinggi Menyesuaikan Konten) --- */
+        .bottom-panel {
+            background: #000; 
+            border-top: 2px solid var(--jade);
+            padding: 10px; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr 1fr; 
+            align-items: center;
+            gap: 10px;
+            min-height: 100px;
+        }
+
+        .info-label { text-align: center; }
+        .info-label p { font-size: 9px; color: var(--jade); text-transform: uppercase; margin-bottom: 2px; }
+        .info-label b { font-family: 'Orbitron'; font-size: clamp(12px, 3vw, 16px); color: #fff; }
+
+        .bet-control { display: flex; align-items: center; justify-content: center; gap: 5px; margin-top: 5px; }
+        .bet-btn { 
+            width: 25px; height: 25px; 
+            background: #222; border: 1px solid var(--jade);
+            color: #fff; border-radius: 5px; cursor: pointer;
+        }
+
+        .spin-area { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .btn-spin {
+            width: clamp(60px, 15vw, 85px); 
+            height: clamp(60px, 15vw, 85px); 
+            border-radius: 50%; 
+            border: 4px solid var(--gold);
+            background: radial-gradient(circle, var(--jade), var(--dark));
+            color: white; font-weight: 900; cursor: pointer;
+            font-family: 'Orbitron';
+            font-size: 14px;
+        }
+        .btn-spin:active { transform: scale(0.9); }
+        .btn-spin.auto-on { animation: pulse 1s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 204, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 204, 0, 0); }
+        }
+
+        /* Animasi Shake */
+        .shaking { animation: shake 0.2s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-2px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .grid-container { gap: 3px; padding: 5px; }
+            .tile { font-size: 28px; border-bottom-width: 3px; }
+            .bottom-panel { padding: 5px; min-height: 80px; }
+        }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div class="multiplier-bar">
+        <div class="m-item active" id="m1">x1</div>
+        <div class="m-item" id="m2">x2</div>
+        <div class="m-item" id="m3">x3</div>
+        <div class="m-item" id="m5">x5</div>
+    </div>
+
+    <div class="game-view">
+        <div class="grid-container" id="grid">
+            </div>
+    </div>
+
+    <div class="bottom-panel">
+        <div class="info-label">
+            <p>TARUHAN</p>
+            <b id="betVal">10.000</b>
+            <div class="bet-control">
+                <button class="bet-btn" onclick="adjustBet(-2000)">-</button>
+                <button class="bet-btn" onclick="adjustBet(2000)">+</button>
+            </div>
+        </div>
+
+        <div class="spin-area">
+            <button class="btn-spin" id="spinBtn" onclick="toggleSpin()">SPIN</button>
+            <label style="font-size: 10px; color: var(--gold); display: flex; align-items: center; gap: 3px;">
+                <input type="checkbox" id="autoCheck" onchange="autoSpinChange()"> AUTO
+            </label>
+        </div>
+
+        <div class="info-label">
+            <p>SALDO</p>
+            <b id="balVal">1.000.000</b>
+            <p style="color:var(--gold); font-size: 10px; margin-top: 4px;">WIN: <span id="winVal">0</span></p>
+        </div>
+    </div>
+
+    <script>
+        const TILES = ["🀇", "🀈", "🀉", "🀊", "🀋", "🀌", "🀅", "🀆", "🀄"];
+        let balance = 1000000;
+        let bet = 10000;
+        let combo = 1;
+        let isSpinning = false;
+        let autoEnabled = false;
+
+        function init() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            for(let i=0; i<20; i++) {
+                spawnTile();
+            }
+        }
+
+        function spawnTile() {
+            const grid = document.getElementById('grid');
+            const div = document.createElement('div');
+            div.className = 'tile';
+            div.innerText = TILES[Math.floor(Math.random() * TILES.length)];
+            grid.appendChild(div);
+        }
+
+        function adjustBet(val) {
+            if(isSpinning) return;
+            bet = Math.max(2000, bet + val);
+            document.getElementById('betVal').innerText = bet.toLocaleString('id-ID');
+        }
+
+        function autoSpinChange() {
+            autoEnabled = document.getElementById('autoCheck').checked;
+            if(autoEnabled && !isSpinning) startSpin();
+        }
+
+        function toggleSpin() {
+            if(isSpinning) return;
+            startSpin();
+        }
+
+        async function startSpin() {
+            if(balance < bet) {
+                alert("Saldo tidak cukup!");
+                document.getElementById('autoCheck').checked = false;
+                autoEnabled = false;
+                return;
+            }
+
+            isSpinning = true;
+            balance -= bet;
+            combo = 1;
+            updateUI();
+            resetMult();
+
+            const grid = document.getElementById('grid');
+            grid.innerHTML = ''; 
+            
+            for(let i=0; i<20; i++) {
+                spawnTile();
+            }
+
+            setTimeout(checkWinLogic, 600);
+        }
+
+        function checkWinLogic() {
+            const isWin = Math.random() > 0.65;
+            
+            if(isWin) {
+                const tiles = document.querySelectorAll('.tile');
+                const winQty = Math.floor(Math.random() * 4) + 3;
+                
+                if(combo >= 3) document.body.classList.add('shaking');
+
+                for(let i=0; i<winQty; i++) {
+                    const randIdx = Math.floor(Math.random() * tiles.length);
+                    tiles[randIdx].classList.add('explode');
+                }
+
+                setTimeout(() => {
+                    document.body.classList.remove('shaking');
+                    const winAmt = bet * combo * 2;
+                    balance += winAmt;
+                    document.getElementById('winVal').innerText = winAmt.toLocaleString('id-ID');
+                    
+                    document.querySelectorAll('.explode').forEach(el => el.remove());
+                    for(let i=0; i<winQty; i++) spawnTile();
+
+                    updateCombo();
+                    updateUI();
+                    
+                    setTimeout(checkWinLogic, 800);
+                }, 400);
+            } else {
+                isSpinning = false;
+                updateUI();
+                if(autoEnabled) {
+                    setTimeout(startSpin, 1000);
+                }
+            }
+        }
+
+        function updateCombo() {
+            if(combo === 1) combo = 2;
+            else if(combo === 2) combo = 3;
+            else combo = 5;
+            
+            document.querySelectorAll('.m-item').forEach(m => m.classList.remove('active'));
+            document.getElementById('m' + combo).classList.add('active');
+        }
+
+        function resetMult() {
+            document.querySelectorAll('.m-item').forEach(m => m.classList.remove('active'));
+            document.getElementById('m1').classList.add('active');
+            document.getElementById('winVal').innerText = "0";
+        }
+
+        function updateUI() {
+            document.getElementById('balVal').innerText = balance.toLocaleString('id-ID');
+            const btn = document.getElementById('spinBtn');
+            if(isSpinning) btn.classList.add('auto-on');
+            else btn.classList.remove('auto-on');
+        }
+
+        init();
+    </script>
+</body>
+</html>

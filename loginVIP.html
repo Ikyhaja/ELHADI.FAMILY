@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI | VIP AUTHENTICATION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;700&display=swap');
+
+        :root {
+            --gold: #d4af37;
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #aa771c);
+            --text: #ffffff;
+            --error: #ff4d4d;
+            --bg-dark: #050505;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Dekorasi Background */
+        body::before {
+            content: ""; position: absolute; inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/dark-leather.png');
+            opacity: 0.3; pointer-events: none;
+        }
+
+        /* --- LOADING OVERLAY --- */
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner {
+            width: 50px; height: 50px;
+            border: 2px solid rgba(212, 175, 55, 0.1);
+            border-top: 2px solid var(--gold);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            margin-bottom: 25px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- LOGIN CARD --- */
+        .login-card {
+            position: relative;
+            width: 400px;
+            padding: 60px 45px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            animation: cardEntry 1.5s ease-out;
+        }
+
+        @keyframes cardEntry {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Siku Emas VIP */
+        .login-card::before, .login-card::after {
+            content: ""; position: absolute; width: 25px; height: 25px; border: 1px solid var(--gold); transition: 0.5s;
+        }
+        .login-card::before { top: -5px; left: -5px; border-right: none; border-bottom: none; }
+        .login-card::after { bottom: -5px; right: -5px; border-left: none; border-top: none; }
+
+        .brand-name { 
+            font-family: 'Cinzel', serif;
+            font-size: 2rem; 
+            font-weight: 900; 
+            letter-spacing: 8px; 
+            margin-bottom: 8px; 
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .sub-text { 
+            font-size: 0.65rem; 
+            color: var(--gold); 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            margin-bottom: 45px;
+            opacity: 0.6;
+        }
+
+        /* INPUT BOX */
+        .input-box { margin-bottom: 25px; position: relative; }
+        .input-box input {
+            width: 100%; 
+            padding: 16px; 
+            background: rgba(255,255,255,0.03); 
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            outline: none; 
+            color: white; 
+            transition: 0.4s;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+        .input-box input:focus { 
+            border-color: var(--gold); 
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+        }
+
+        /* BUTTON VIP */
+        .btn-login {
+            width: 100%; 
+            padding: 16px; 
+            background: transparent; 
+            border: 1px solid var(--gold);
+            color: var(--gold); 
+            font-family: 'Cinzel', serif;
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 4px;
+            cursor: pointer; 
+            transition: 0.5s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-login:hover { 
+            background: var(--gold-gradient); 
+            color: #000; 
+            box-shadow: 0 0 30px rgba(179, 135, 40, 0.4); 
+            border-color: transparent;
+        }
+
+        #msg { 
+            font-size: 0.65rem; 
+            margin-bottom: 15px; 
+            height: 15px; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            letter-spacing: 2px;
+        }
+
+        /* SHAKE ANIMATION */
+        .shake { animation: shakeAnim 0.4s ease-in-out; border-color: var(--error) !important; }
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .help-link {
+            margin-top: 35px; 
+            font-size: 0.6rem; 
+            color: rgba(212, 175, 55, 0.4); 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .help-link a { color: rgba(212, 175, 55, 0.4); text-decoration: none; transition: 0.3s; }
+        .help-link a:hover { color: var(--gold); }
+
+    </style>
+</head>
+<body>
+
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+        <div style="letter-spacing: 12px; font-size: 0.7rem; font-weight: 700; color: var(--gold); font-family: 'Cinzel', serif;">VERIFYING...</div>
+    </div>
+
+    <div class="login-card" id="card">
+        <div class="brand-name">ELHADI</div>
+        <div class="sub-text">Private Regional System</div>
+
+        <div id="msg"></div>
+
+        <form onsubmit="event.preventDefault(); handleAuth();">
+            <div class="input-box">
+                <input type="text" id="user" placeholder="USER IDENTITY" required autocomplete="off">
+            </div>
+            <div class="input-box">
+                <input type="password" id="pass" placeholder="SECURITY PASSCODE" required>
+            </div>
+            <button type="submit" class="btn-login">Authorize Access</button>
+        </form>
+
+        <div class="help-link">
+           <a href="#">Security Protocol Support</a>
+        </div>
+    </div>
+
+    <script>
+        function handleAuth() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            const card = document.getElementById('card');
+            const msg = document.getElementById('msg');
+            const loader = document.getElementById('loader-overlay');
+
+            // Akun: User = ELHADI, Pass = WIBU
+            if (u === "ELHADIVIP" && p === "WIBU11") {
+                msg.style.color = "var(--gold)";
+                msg.innerText = "Access Granted. Welcome.";
+
+                setTimeout(() => {
+                    loader.style.display = "flex"; 
+                    
+                    setTimeout(() => {
+                        window.location.href = "lobbyVIP.html"; 
+                    }, 2500); 
+                }, 500);
+
+            } else {
+                msg.style.color = "var(--error)";
+                msg.innerText = "Denial: Invalid Credentials";
+                
+                card.classList.add('shake');
+                setTimeout(() => card.classList.remove('shake'), 400);
+                document.getElementById('pass').value = "";
+            }
+        }
+    </script>
+</body>
+</html>
