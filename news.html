@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI - NEWS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth; }
+        body { background-color: #000; color: white; overflow-x: hidden; }
+
+        /* --- HERO & PREORDER (Singkat dari sebelumnya) --- */
+        .hero { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; padding: 0 10%; }
+        .video-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 100%); z-index: 0; }
+        .content { z-index: 1; max-width: 600px; }
+        .btn { padding: 15px 35px; border: 2px solid white; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s; text-decoration: none; display: inline-block; }
+        .btn-primary { background: white; color: black; }
+        .btn-secondary { background: transparent; color: white; }
+
+        /* --- NEWS SECTION --- */
+        .news-section {
+            padding: 100px 10%;
+            background: #000;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 50px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 20px;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .btn-all-news {
+            color: #ccc;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-all-news:hover { color: white; padding-right: 10px; }
+
+        /* News Grid */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .news-card {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .news-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        .news-card:hover .news-img {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .news-info {
+            position: relative;
+            z-index: 1;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+        }
+
+        .news-category {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            background: #25d366; /* Warna aksen */
+            color: black;
+            padding: 3px 10px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .news-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            line-height: 1.2;
+            margin-bottom: 10px;
+        }
+
+        .news-date {
+            font-size: 0.8rem;
+            color: #bbb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .section-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .news-card { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="hero">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="latifwibu.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="content">
+            <h1 style="font-size: 4rem; font-weight: 900; margin-bottom: 20px;">BERITA & UPDATE</h1>
+            <p style="margin-bottom: 30px; color: #ccc;">Dapatkan informasi terbaru mengenai ekspansi, patch notes, dan event komunitas ELHADI.</p>
+            <a href="#news" class="btn btn-primary">Baca Berita</a>
+        </div>
+    </section>
+
+    <section id="news" class="news-section">
+        <div class="section-header">
+            <h2>Latest News</h2>
+            <a href="#" class="btn-all-news">Lihat Semua Berita &rarr;</a>
+        </div>
+
+        <div class="news-grid">
+            <a href="#" class="news-card">
+                <img src="semangalau.jpeg" class="news-img" alt="News 1">
+                <div class="news-info">
+                    <span class="news-category">Update</span>
+                    <div class="news-title">seman galau karena dirinya tidak pernah menemukan cinta sejati.</div>
+                    <div class="news-date">20 April 2026</div>
+                </div>
+            </a>
+
+            <a href="#" class="news-card">
+                <img src="nopal dkt.jpeg" class="news-img" alt="News 1">
+                <div class="news-info">
+                    <span class="news-category">Update</span>
+                    <div class="news-title">nopal dikabarkan sedang dekat dengan seseorang berinisial N.</div>
+                    <div class="news-date">18 januari 2026</div>
+                </div>
+            </a>
+
+                        <a href="#" class="news-card">
+                <img src="elkhodi.jpeg" class="news-img" alt="News 1">
+                <div class="news-info">
+                    <span class="news-category">Update</span>
+                    <div class="news-title">latif dikabarkan terkena tempramental karena rokoknya habis.</div>
+                    <div class="news-date">20 januari 2026</div>
+                </div>
+            </a>
+
+            <a href="#" class="news-card">
+                <img src="bukber.jpeg" class="news-img" alt="News 2">
+                <div class="news-info">
+                    <span class="news-category" style="background: #e91e63; color: white;">Event</span>
+                    <div class="news-title">Acara buka bersama di basecamp ELHADI di loktabat utara, banjarbaru</div>
+                    <div class="news-date">15 februari 2026</div>
+                </div>
+            </a>
+
+                        <a href="#" class="news-card">
+                <img src="spkborlnji.jpeg" class="news-img" alt="News 2">
+                <div class="news-info">
+                    <span class="news-category" style="background: #2ce91e; color: white;">Update</span>
+                    <div class="news-title">Terpantau nopal spakbor sedang bernafsu dengan patung model</div>
+                    <div class="news-date">30 april 2026</div>
+                </div>
+            </a>
+
+                        <a href="#" class="news-card">
+                <img src="kikik.jpeg" class="news-img" alt="News 2">
+                <div class="news-info">
+                    <span class="news-category" style="background: #008cea; color: white;">Tumben</span>
+                    <div class="news-title">Presentasi tanpa persiapan</div>
+                    <div class="news-date">18 April 2026</div>
+                </div>
+            </a>
+
+            <a href="#" class="news-card">
+                <img src="elkom.jpeg" class="news-img" alt="News 3">
+                <div class="news-info">
+                    <span class="news-category" style="background: #ffeb3b; color: black;">Komunitas</span>
+                    <div class="news-title">ELHADI Community Update: Rutinan malam senin disekumpul</div>
+                    <div class="news-date">19 April 2026</div>
+                </div>
+            </a>
+
+                        <a href="#" class="news-card">
+                <img src="wew.jpeg" class="news-img" alt="News 3">
+                <div class="news-info">
+                    <span class="news-category" style="background: #ffeb3b; color: black;">Komunitas</span>
+                    <div class="news-title">ELHADI Community Update: buka bersama di basecamp ELHADI</div>
+                    <div class="news-date">19 februari 2026</div>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <footer style="padding: 50px 10%; background: #111; text-align: center; border-top: 1px solid #333;">
+        <p style="color: #666; font-size: 0.8rem;">&copy; 2026 IKYSAPUTRA. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
