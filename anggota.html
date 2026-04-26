@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang kami</title>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --accent-color: #25d366; /* Warna WhatsApp untuk integrasi */
+            --bg-dark: #050505;
+            --hud-line: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; scroll-behavior: smooth; }
+        body { background-color: var(--bg-dark); color: white; overflow-x: hidden; }
+
+        /* Background Noise Effect */
+        body::before {
+            content: "";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url(hh);
+            opacity: 0.05; pointer-events: none; z-index: 9999;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 30px 10%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; letter-spacing: 5px; text-transform: uppercase; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 30px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh; width: 100%; position: relative;
+            display: flex; align-items: center; padding: 0 10%;
+        }
+        .hero-video {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -2;
+        }
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 20%, var(--bg-dark) 100%),
+                        linear-gradient(90deg, var(--bg-dark) 0%, transparent 50%);
+            z-index: -1;
+        }
+        .hero-content h1 {
+            font-size: clamp(3rem, 10vw, 8rem); line-height: 0.9;
+            font-weight: 900; text-transform: uppercase; margin-bottom: 20px;
+        }
+        
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block; padding: 18px 45px; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 3px; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 2px solid white; text-decoration: none; font-size: 0.9rem;
+        }
+        .btn-filled { background: white; color: black; }
+        .btn-filled:hover { background: transparent; color: white; transform: scale(1.05); }
+        .btn-outline { background: transparent; color: white; margin-left: 20px; }
+        .btn-outline:hover { background: white; color: black; }
+
+        /* --- SECTION NEWS (GRID) --- */
+        .section-container { padding: 100px 10%; border-top: 1px solid var(--hud-line); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        
+        .card {
+            position: relative; height: 500px; overflow: hidden;
+            border: 1px solid var(--hud-line); transition: 0.5s;
+        }
+        .card:hover { border-color: white; }
+        .card img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: 0.8s; opacity: 0.5; filter: grayscale(1);
+        }
+        .card:hover img { transform: scale(1.1); opacity: 1; filter: grayscale(0); }
+        .card-info {
+            position: absolute; bottom: 0; padding: 40px;
+            background: linear-gradient(to top, black, transparent);
+        }
+
+        /* --- WHATSAPP WIDGET --- */
+        #wa-chat { position: fixed; bottom: 30px; right: 30px; z-index: 1000; }
+        .wa-btn {
+            width: 60px; height: 60px; background: var(--accent-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3); cursor: pointer;
+        }
+        .wa-window {
+            display: none; width: 300px; background: white; border-radius: 20px;
+            position: absolute; bottom: 80px; right: 0; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); color: black;
+            animation: pop 0.3s ease-out;
+        }
+        @keyframes pop { from { transform: scale(0.8) translateY(20px); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">ELHADI FAMILY</div>
+        <div class="nav-links">
+            <a href="#news">News</a>
+            <a href="#team">Team</a>
+            <a href="CVDeveloper.html">CV DEVLOPER</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <video class="hero-video" autoplay muted loop playsinline>
+            <source src="lods.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <h1 id="title">ANGGOTA<br>ELHADI</h1>
+            <p style="letter-spacing: 5px; margin-bottom: 40px; opacity: 0.7;">KENALIKAN MEREKA SEMUA ADALAH KELUARGA ELHADI</p>
+            <div class="btn-group">
+                <a href="store.html" class="btn btn-filled">KENALI</a>
+                <a href="youth3.html" onclick="toggleTrailer()" class="btn btn-outline">VIDEO</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="section-container">
+        <h2 style="font-size: 3rem; margin-bottom: 50px; font-weight: 900;">Daftar Anggota</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="elkhodi.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">KETUA ELHADI</span>
+                    <h3>Latif Hadi</h3>
+                </div>
+            </div>
+            <div class="card">
+                <img src="IKY.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">DEVELOPER WEBSITE</span>
+                    <h3>M. Risky Saputra</h3>
+                </div>
+            </div>
+                        <div class="card">
+                <img src="madan.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">SIPALING COOL</span>
+                    <h3>A. Ramadhan</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="alkm2.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">HENGKER UIN</span>
+                    <h3>M. Fadhil Ibrahim</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="spakbor.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">ABANG MULEET</span>
+                    <h3>Nopal Spacebor</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="dds2.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">WAHABI</span>
+                    <h3>M Ihlas Hidayatullah</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="zib.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">BAPAK ELHADI</span>
+                    <h3>Nazib Fadillah</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="zal.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">BAPAK BIJAK ELHADI</span>
+                    <h3>M. Faizal</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="dar.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">SUKA HYTAM2</span>
+                    <h3>Darrel D.W</h3>
+                </div>
+            </div>
+
+                        <div class="card">
+                <img src="man.jpeg" alt="News">
+                <div class="card-info">
+                    <span style="color: var(--accent-color); font-weight: bold;">KOTAK DELAY</span>
+                    <h3>M. Seman</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="wa-chat">
+        <div id="wa-win" class="wa-window">
+            <div style="background: #075e54; color: white; padding: 20px;">
+                <strong>Live Chat Support</strong>
+                <p style="font-size: 10px;">Typically replies in minutes</p>
+            </div>
+            <div style="padding: 20px;">
+                Halo! Ada yang bisa kami bantu?
+                <a href="https://wa.me/62812345678" target="_blank" style="display: block; background: #25d366; color: white; text-align: center; padding: 10px; border-radius: 10px; margin-top: 15px; text-decoration: none;">Chat di WhatsApp</a>
+            </div>
+        </div>
+        <div class="wa-btn" onclick="toggleWa()">
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="white"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.767 5.767 0 1.267.409 2.439 1.102 3.394l-.739 2.703 2.77-.725a5.736 5.736 0 0 0 2.634.644c3.181 0 5.767-2.586 5.767-5.767 0-3.181-2.586-5.767-5.767-5.767zm3.432 8.163c-.146.411-.744.75-1.02.8-.277.051-.62.091-1.011-.035-.24-.078-.545-.183-.93-.348-1.636-.704-2.705-2.37-2.786-2.48-.081-.11-.663-.883-.663-1.684 0-.802.421-1.196.571-1.362.15-.166.33-.207.44-.207.11 0 .22 0 .315.005.101.005.237-.038.371.288.139.336.475 1.159.516 1.242.041.083.069.179.014.288-.055.11-.083.179-.166.275-.083.097-.174.216-.248.29-.083.083-.17.174-.074.339.097.165.431.711.924 1.15.635.566 1.171.741 1.336.823.166.083.262.069.359-.041.097-.11.416-.484.526-.649.11-.166.22-.138.371-.083.15.055.955.45 1.12.533.166.083.277.124.317.194.041.069.041.401-.105.812z"/></svg>
+        </div>
+    </div>
+
+    <script>
+        // Animasi Judul saat Mouse Bergerak
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.pageX) / 25;
+            const y = (window.innerHeight / 2 - e.pageY) / 25;
+            document.getElementById('title').style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+        });
+
+        function toggleWa() {
+            const win = document.getElementById('wa-win');
+            win.style.display = win.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

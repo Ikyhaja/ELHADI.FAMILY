@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Developer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400&display=swap');
+
+        :root {
+            --bg: #0c0c0c;
+            --panel: #141414;
+            --accent: #00ff88;
+            --text-main: #ffffff;
+            --text-dim: #999;
+            --border: #222;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .cv-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.5);
+        }
+
+        /* --- TOP HEADER --- */
+        header {
+            padding: 60px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Ubah ke center agar sejajar foto */
+        }
+
+        .header-left { display: flex; align-items: center; gap: 30px; }
+
+        /* Area Foto Baru */
+        .cv-photo {
+            width: 100px;
+            height: 100px;
+            background: var(--border);
+            border: 1px solid var(--accent);
+            overflow: hidden;
+        }
+
+        .cv-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1); /* Efek hitam putih agar estetik */
+        }
+
+        .header-title h1 {
+            font-size: 2.5rem; /* Sedikit dikecilkan agar seimbang */
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .header-title p {
+            color: var(--accent);
+            font-size: 0.8rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .contact-info {
+            text-align: right;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .cv-content {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1px;
+            background: var(--border);
+        }
+
+        .cv-column {
+            background: var(--panel);
+            padding: 40px;
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            display: block;
+        }
+
+        /* --- SIDEBAR (KIRI) --- */
+        .sidebar {
+            border-right: 1px solid var(--border);
+        }
+
+        .skill-group { margin-bottom: 40px; }
+        .skill-group h3 { font-size: 0.85rem; margin-bottom: 15px; color: #fff; }
+        .skill-list { list-style: none; }
+        .skill-list li {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .skill-list li::before {
+            content: "•";
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        /* --- MAIN AREA (KANAN) --- */
+        .experience-item {
+            margin-bottom: 40px;
+        }
+
+        .exp-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .exp-role { font-weight: 700; font-size: 1.1rem; }
+        .exp-date { font-family: 'JetBrains Mono'; font-size: 0.7rem; color: var(--accent); }
+        .exp-company { font-size: 0.85rem; color: var(--text-dim); font-weight: 600; margin-bottom: 15px; }
+        .exp-desc { font-size: 0.9rem; color: #ccc; }
+
+        /* --- FOOTER / ACTIONS --- */
+        .cv-footer {
+            padding: 40px 60px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-print {
+            padding: 10px 25px;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-print:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        @media (max-width: 800px) {
+            header { flex-direction: column; align-items: flex-start; gap: 30px; }
+            .header-left { flex-direction: column; align-items: flex-start; }
+            .contact-info { text-align: left; }
+            .cv-content { grid-template-columns: 1fr; }
+            .cv-column { padding: 30px; }
+        }
+
+        @media print {
+            body { padding: 0; background: #fff; color: #000; }
+            .cv-wrapper { box-shadow: none; border: 1px solid #ddd; }
+            .cv-footer, .btn-print { display: none; }
+            .accent { color: #000; }
+            .cv-photo { border-color: #000; }
+            .cv-photo img { filter: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cv-wrapper">
+        <header>
+            <div class="header-left">
+                <div class="cv-photo">
+                    <img src="IKY.jpeg" alt="JP">
+                </div>
+                <div class="header-title">
+                    <h1>Muhammad Risky Saputra</h1>
+                    <p>Developer Website</p>
+                </div>
+            </div>
+            <div class="contact-info">
+                <p>rizkysaputra7e@gmail.com</p>
+                <p>Banjarmasin, Indonesia</p>
+                <p>github.com/riskysaputra7e</p>
+            </div>
+        </header>
+
+        <div class="cv-content">
+            <aside class="cv-column sidebar">
+                <div class="skill-group">
+                    <span class="section-label">sekolah</span>
+                    <ul class="skill-list">
+                        <li>TK MUFAKAT</li>
+                        <li>MI PLUS DARUL ILMI</li>
+                        <li>MTS DARUL ILMI</li>
+                        <li>MA DARUL ILMI</li>
+                        <li>UNIVERSITAS ISLAM NEGRI ANTASARI BANJARBARU</li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <span class="section-label">PENGALAMAN ORGANISASI</span>
+                    <ul class="skill-list">
+                        <li>KETUA BIDANG PERALATAN OP3DI</li>
+                        <li>PENCAK SILAT NAHDLATUL ULAMA PAGARNUSA</li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <span class="section-label">Languages</span>
+                    <ul class="skill-list">
+                        <li>Indonesia (Native)</li>
+                        <li>English (Professional)</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <main class="cv-column">
+                <section>
+                    <span class="section-label">Professional Experience</span>
+                    
+                    <div class="experience-item">
+                        <div class="exp-header">
+                            <span class="exp-role">Awal ketertarikan TI</span>
+                            <span class="exp-date">2026 - PRESENT</span>
+                        </div>
+                        <div class="exp-company">ELHADI Operations</div>
+                        <p class="exp-desc">
+                           Perjalanan saya di dunia teknologi dimulai sejak duduk di Madrasah Ibtidaiyah (MI), ketika pertama kali diperkenalkan dengan pelajaran TIK. Dari sana, ketertarikan terhadap komputer dan pemrograman mulai tumbuh. Seiring waktu, saya terus mengembangkan kemampuan secara mandiri melalui eksplorasi berbagai bahasa pemrograman dan proyek sederhana. Pengalaman ini membentuk dasar yang kuat dalam berpikir logis, problem solving, serta kemampuan adaptasi terhadap perkembangan teknologi hingga saat ini.
+                        </p>
+                    </div>
+
+                    <span class="section-label" style="margin-top: 60px;">Funfacts</span>
+                    <p style="font-size: 0.9rem; color: #aaa;">
+                        1. Mulai belajar coding sejak MI melalui pelajaran TIK, dan sejak itu terus mengembangkan skill secara mandiri.</p>
+                    <p style="font-size: 0.9rem; color: #aaa;">
+                        2. Sering menghabiskan waktu luang untuk bereksperimen dengan kode dan mencoba teknologi baru.
+                    </p>
+                    <p style="font-size: 0.9rem; color: #aaa;">
+                        3. Lebih suka belajar dari praktik langsung dibanding teori, sehingga cepat memahami konsep baru.
+                </section>
+            </main>
+        </div>
+
+        <div class="cv-footer">
+            <span style="font-size: 0.6rem; color: var(--text-dim); letter-spacing: 2px;">DOCUMENT_ID: CV-IKYWEBSITE-99</span>
+            <a href="javascript:window.print()" class="btn-print">Print Document</a>
+        </div>
+    </div>
+
+</body>
+</html>

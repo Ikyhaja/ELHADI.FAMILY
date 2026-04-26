@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pixel World 99% Stable Mobile</title>
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; overflow: hidden; background: #74b9ff; font-family: sans-serif; touch-action: none; }
+        canvas { display: block; image-rendering: pixelated; width: 100vw; height: 100vh; }
+        
+        /* UI HUD */
+        .hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+        .btn { pointer-events: auto; background: rgba(0,0,0,0.5); border: 2px solid white; color: white; display: flex; justify-content: center; align-items: center; }
+        
+        /* JOYSTICK */
+        #joy-base { position: absolute; bottom: 30px; left: 30px; width: 100px; height: 100px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.4); }
+        #joy-stick { position: absolute; width: 40px; height: 40px; background: white; border-radius: 50%; left: 28px; top: 28px; }
+        
+        /* JUMP */
+        #jump-btn { position: absolute; bottom: 40px; right: 40px; width: 80px; height: 80px; border-radius: 50%; font-weight: bold; }
+        
+        /* HOTBAR */
+        #hotbar { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; background: rgba(0,0,0,0.7); padding: 5px; border-radius: 8px; }
+        .slot { width: 42px; height: 42px; border: 2px solid #777; background: #222; color: white; display: flex; justify-content: center; align-items: center; font-size: 8px; }
+        .slot.active { border-color: #f1c40f; background: #444; }
+        
+        #stats { position: absolute; top: 15px; left: 15px; color: white; text-shadow: 2px 2px black; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="hud">
+        <div id="stats">GEMS: <span id="gems">0</span></div>
+        <div id="hotbar">
+            <div class="slot active" onclick="sel(1)">DIRT</div>
+            <div class="slot" onclick="sel(2)">GRASS</div>
+            <div class="slot" onclick="sel(3)">STONE</div>
+            <div class="slot" onclick="sel(5)" style="color:orange">WALL</div>
+        </div>
+        <div id="joy-base" class="btn"><div id="joy-stick"></div></div>
+        <div id="jump-btn" class="btn">UP</div>
+    </div>
+
+    <canvas id="game"></canvas>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        const stick = document.getElementById('joy-stick');
+
+        // GAME CONSTANTS
+        const TILE = 32;
+        const GRAV = 0.5;
+        const FRIC = 0.8;
+        const WORLD_W = 100;
+        const WORLD_H = 60;
+
+        let world = [], bots = [], drops = [], gems = 0;
+        let camX = 0, camY = 0, moveDir = 0, activeTile = 1;
+
+        // PLAYER
+        const player = {
+            x: 1500, y: 1000, w: 24, h: 32, vx: 0, vy: 0,
+            grounded: false, jumps: 0, dirL: false, wc: 0,
+            skin: { h: '#3d2b1f', b: '#e74c3c', l: '#2f3542' }
+        };
+
+        // BOT CLASS
+        class Bot {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.w = 24; this.h = 32;
+                this.vx = 0; this.vy = 0; this.timer = 0;
+                this.dirL = false; this.grounded = false; this.wc = 0;
+                const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                this.skin = { h: r(), b: r(), l: r() };
+            }
+            update() {
+                this.timer--;
+                if(this.timer <= 0) {
+                    this.vx = (Math.random() - 0.5) * 3;
+                    this.timer = 60 + Math.random() * 100;
+                    if(Math.random() > 0.8 && this.grounded) this.vy = -10;
+                }
+                this.vy += GRAV; this.x += this.vx; this.y += this.vy;
+                if(this.vx !== 0) { this.dirL = this.vx < 0; this.wc += 0.1; }
+                physics(this);
+            }
+        }
+
+        // INIT WORLD
+        function init() {
+            for(let x=0; x<WORLD_W; x++) {
+                world[x] = [];
+                for(let y=0; y<WORLD_H; y++) {
+                    let fg = 0, bg = 0;
+                    if(y > 35) { fg = 1; bg = 5; }
+                    else if(y === 35) fg = 2;
+                    if(y === WORLD_H - 1) fg = 4;
+                    world[x][y] = { fg, bg };
+                }
+            }
+            for(let i=0; i<6; i++) bots.push(new Bot(1400 + i*160, 900));
+        }
+
+        // PHYSICS & COLLISION
+        function physics(obj) {
+            let l = Math.floor(obj.x/TILE), r = Math.floor((obj.x+obj.w)/TILE);
+            let t = Math.floor(obj.y/TILE), b = Math.floor((obj.y+obj.h)/TILE);
+            obj.grounded = false;
+            
+            for(let x=l; x<=r; x++) {
+                for(let y=t; y<=b; y++) {
+                    if(world[x] && world[x][y] && world[x][y].fg > 0) {
+                        let tx = x*TILE, ty = y*TILE;
+                        if(obj.vy > 0 && obj.y+obj.h > ty && obj.y < ty) { obj.y = ty-obj.h; obj.vy = 0; obj.grounded = true; obj.jumps = 0; }
+                        else if(obj.vy < 0 && obj.y < ty+TILE && obj.y+obj.h > ty+TILE) { obj.y = ty+TILE; obj.vy = 0; }
+                        if(obj.vx > 0 && obj.x+obj.w > tx && obj.x < tx) obj.x = tx-obj.w;
+                        else if(obj.vx < 0 && obj.x < tx+TILE && obj.x+obj.w > tx+TILE) obj.x = tx+TILE;
+                    }
+                }
+            }
+            if(obj.y > WORLD_H * TILE) { obj.x = 1500; obj.y = 800; obj.vy = 0; }
+        }
+
+        // DRAW CHARACTER
+        function drawChar(o) {
+            ctx.save();
+            ctx.translate(o.x + o.w/2, o.y);
+            if(o.dirL) ctx.scale(-1, 1);
+            let bob = Math.sin(o.wc * 5) * 3;
+            // Head
+            ctx.fillStyle = o.skin.h; ctx.fillRect(-7, bob, 14, 10);
+            ctx.fillStyle = '#ffdbac'; ctx.fillRect(-6, 3+bob, 12, 7);
+            ctx.fillStyle = 'black'; ctx.fillRect(2, 5+bob, 2, 3); // Eye
+            // Body
+            ctx.fillStyle = o.skin.b; ctx.fillRect(-8, 10+bob/2, 16, 12);
+            // Legs
+            ctx.fillStyle = o.skin.l; ctx.fillRect(-6, 22, 5, 10); ctx.fillRect(1, 22, 5, 10);
+            ctx.restore();
+        }
+
+        // TOUCH EVENTS
+        document.getElementById('joy-base').addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            let touch = e.touches[0];
+            let rect = e.currentTarget.getBoundingClientRect();
+            let dx = touch.clientX - (rect.left + 50);
+            moveDir = dx > 10 ? 1 : (dx < -10 ? -1 : 0);
+            stick.style.transform = `translateX(${Math.max(-30, Math.min(30, dx))}px)`;
+        }, {passive: false});
+
+        document.getElementById('joy-base').addEventListener('touchend', () => {
+            moveDir = 0; stick.style.transform = `translateX(0px)`;
+        });
+
+        document.getElementById('jump-btn').addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if(player.grounded) { player.vy = -11; player.jumps = 1; player.grounded = false; }
+            else if(player.jumps < 2) { player.vy = -10; player.jumps = 2; }
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            let touch = e.touches[0];
+            let tx = Math.floor((touch.clientX + camX) / TILE);
+            let ty = Math.floor((touch.clientY + camY) / TILE);
+            if(world[tx] && world[tx][ty]) {
+                if(world[tx][ty].fg > 0 && world[tx][ty].fg !== 4) {
+                    drops.push({x: tx*TILE+16, y: ty*TILE+16, vx: 0, vy: -4});
+                    world[tx][ty].fg = 0;
+                } else if(world[tx][ty].fg === 0) {
+                    world[tx][ty].fg = activeTile;
+                }
+            }
+        });
+
+        function sel(id) {
+            activeTile = id;
+            document.querySelectorAll('.slot').forEach((s, i) => s.classList.toggle('active', [1,2,3,5][i] === id));
+        }
+
+        // MAIN LOOP
+        function loop() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Player Logic
+            player.vx = moveDir * 5;
+            if(moveDir !== 0) { player.dirL = moveDir < 0; player.wc += 0.2; } else player.wc = 0;
+            player.vy += GRAV; player.x += player.vx; player.y += player.vy;
+            physics(player);
+
+            bots.forEach(b => b.update());
+
+            drops.forEach((d, i) => {
+                d.vy += 0.2; d.x += d.vx; d.y += d.vy;
+                let dist = Math.hypot((player.x+12)-d.x, (player.y+16)-d.y);
+                if(dist < 100) { d.x += ((player.x+12)-d.x)*0.2; d.y += ((player.y+16)-d.y)*0.2; }
+                if(dist < 15) { drops.splice(i, 1); gems += 10; document.getElementById('gems').innerText = gems; }
+            });
+
+            // Camera
+            camX = player.x - canvas.width/2;
+            camY = player.y - canvas.height/2;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingEnabled = false;
+            ctx.save();
+            ctx.translate(-camX, -camY);
+
+            // Draw World
+            let sX = Math.floor(camX/TILE), eX = sX + Math.ceil(canvas.width/TILE) + 1;
+            let sY = Math.floor(camY/TILE), eY = sY + Math.ceil(canvas.height/TILE) + 1;
+
+            for(let x=sX; x<eX; x++) {
+                if(!world[x]) continue;
+                for(let y=sY; y<eY; y++) {
+                    let t = world[x][y];
+                    if(!t) continue;
+                    if(t.bg > 0) { ctx.fillStyle = '#3d2b1f'; ctx.fillRect(x*TILE, y*TILE, TILE, TILE); }
+                    if(t.fg > 0) {
+                        ctx.fillStyle = t.fg==1?'#8d6e63':t.fg==2?'#43a047':t.fg==3?'#78909c':'#111';
+                        ctx.fillRect(x*TILE, y*TILE, TILE, TILE);
+                        ctx.strokeStyle = "rgba(0,0,0,0.1)"; ctx.strokeRect(x*TILE, y*TILE, TILE, TILE);
+                    }
+                }
+            }
+
+            drops.forEach(d => { ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(d.x, d.y, 5, 0, Math.PI*2); ctx.fill(); });
+            bots.forEach(b => drawChar(b));
+            drawChar(player);
+
+            ctx.restore();
+            requestAnimationFrame(loop);
+        }
+
+        init();
+        loop();
+    </script>
+</body>
+</html>

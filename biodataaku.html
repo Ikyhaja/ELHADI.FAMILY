@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Profile | Core.OS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@300&display=swap');
+
+        :root {
+            --bg: #080808;
+            --panel: #111111;
+            --panel-light: #181818;
+            --accent: #00ff88;
+            --border: #222222;
+            --text-main: #ffffff;
+            --text-dim: #777777;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        /* --- CONTAINER --- */
+        .dev-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 30px;
+        }
+
+        /* --- LEFT COLUMN: IDENTITY --- */
+        .identity-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 40px 30px;
+            height: fit-content;
+            position: sticky;
+            top: 40px;
+        }
+
+        .profile-img {
+            width: 160px;
+            height: 160px;
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            margin: 0 auto 25px;
+            padding: 10px;
+        }
+
+        .profile-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1);
+        }
+
+        .dev-name { font-size: 1.6rem; font-weight: 800; text-align: center; margin-bottom: 5px; }
+        .dev-tag { 
+            font-size: 0.65rem; 
+            text-align: center; 
+            display: block; 
+            color: var(--accent); 
+            letter-spacing: 3px; 
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .status-box {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .status-line {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            color: var(--text-dim);
+        }
+
+        .status-line span:last-child { color: #fff; font-family: 'JetBrains Mono', monospace; }
+
+        /* --- RIGHT COLUMN: TECHNICAL --- */
+        .tech-dossier {
+            display: grid;
+            gap: 30px;
+        }
+
+        .section-box {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            border-left: 3px solid var(--accent);
+            padding-left: 15px;
+        }
+
+        /* Tech Stack Tags */
+        .stack-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stack-tag {
+            background: var(--panel-light);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #ccc;
+        }
+
+        .stack-tag span { color: var(--accent); margin-right: 5px; }
+
+        /* Experience List */
+        .exp-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .exp-item:last-child { border: none; padding: 0; margin: 0; }
+        .exp-role { font-weight: 700; font-size: 1.1rem; }
+        .exp-comp { font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; }
+        .exp-desc { font-size: 0.9rem; line-height: 1.6; color: #aaa; }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-primary { background: #fff; color: #000; }
+        .btn-primary:hover { background: var(--accent); }
+        .btn-secondary { border: 1px solid var(--border); color: #fff; }
+        .btn-secondary:hover { background: var(--panel-light); }
+
+        @media (max-width: 850px) {
+            .dev-container { grid-template-columns: 1fr; }
+            .identity-card { position: relative; top: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dev-container">
+        <aside class="identity-card">
+            <div class="profile-img">
+                <img src="IKY.jpeg" alt="Developer">
+            </div>
+            <h1 class="dev-name">M. Risky Saputra</h1>
+            <span class="dev-tag">Full-Stack Developer</span>
+
+            <div class="status-box">
+                <div class="status-line"><span>Availability</span> <span>READY</span></div>
+                <div class="status-line"><span>Experience</span> <span>4+ YEARS</span></div>
+                <div class="status-line"><span>Location</span> <span>ID (WITA)</span></div>
+                <div class="status-line"><span>ID_CODE</span> <span>882-DEV-X</span></div>
+            </div>
+
+            <div class="actions" style="margin-top: 30px;">
+                <a href="index.html" class="btn btn-primary">Base Menu</a>
+            </div>
+        </aside>
+
+        <main class="tech-dossier">
+            <section class="section-box">
+                <h2 class="section-title">MEDIA PENDUKUNG</h2>
+                <div class="stack-grid">
+                    <div class="stack-tag"><span>#</span>HTML</div>
+                    <div class="stack-tag"><span>#</span>visual code</div>
+                    <div class="stack-tag"><span>#</span>WIFI UIN</div>
+                    <div class="stack-tag"><span>#</span>LEPTOP ASUS RYZEN 3</div>
+                    <div class="stack-tag"><span>#</span>AI</div>
+                    <div class="stack-tag"><span>#</span>UI/UX Design</div>
+                    <div class="stack-tag"><span>#</span>NIAT YANG TULUS</div>
+                </div>
+            </section>
+
+            <section class="section-box">
+                <h2 class="section-title">Core Operations</h2>
+                <div class="exp-item">
+                    <p class="exp-role">Core.OS Interface</p>
+                    <p class="exp-comp">Lead Architect // 2025 - Present</p>
+                    <p class="exp-desc">Mengembangkan sistem antarmuka berbasis terminal modern dengan integrasi pesan WhatsApp otomatis dan arsitektur keamanan terenkripsi.</p>
+                </div>
+                <div class="exp-item">
+                    <p class="exp-role">DataBank Encryption</p>
+                    <p class="exp-comp">System Designer // 2024</p>
+                    <p class="exp-desc">Membangun menu kodex/database untuk penyimpanan kutipan dan data terstruktur dengan estetika ala Ubisoft Connect.</p>
+                </div>
+            </section>
+
+            <section class="section-box" style="border-style: dashed;">
+                <h2 class="section-title">Establish Connection</h2>
+                <p style="font-size: 0.9rem; color: var(--text-dim); margin-bottom: 25px;">
+                    Membuka jalur komunikasi untuk kolaborasi teknis atau pengembangan sistem khusus.
+                </p>
+                <div class="actions">
+                    <a href="contact.html" class="btn btn-secondary">Send Message</a>
+                    <a href="#" class="btn btn-secondary">Download Dossier</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+</html>

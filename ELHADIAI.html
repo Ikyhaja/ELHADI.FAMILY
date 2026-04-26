@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELHADI AI - Pro Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        
+        .message-appear { animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .typing-dot { animation: blink 1.4s infinite both; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
+
+        .glass { background: rgba(33, 33, 33, 0.8); backdrop-filter: blur(12px); }
+    </style>
+</head>
+<body class="bg-[#212121] text-gray-100 overflow-hidden">
+
+    <div class="flex h-screen">
+        <aside id="sidebar" class="w-72 bg-[#171717] h-full hidden lg:flex flex-col p-4 border-r border-white/10 fixed lg:relative z-50 shadow-2xl lg:shadow-none">
+            <button onclick="newChat()" class="flex items-center gap-3 px-4 py-3 text-sm font-medium border border-white/20 rounded-xl hover:bg-white/5 transition-all mb-6 group">
+                <i class="fa-solid fa-plus text-xs group-hover:rotate-90 transition-transform"></i> Chat Baru
+            </button>
+            
+            <div class="flex-1 overflow-y-auto space-y-1 custom-scroll">
+                <div class="text-[11px] text-gray-500 font-bold px-3 mb-3 uppercase tracking-widest">Riwayat Percakapan</div>
+                <div id="history-list" class="space-y-1"></div>
+            </div>
+
+            <div class="mt-auto pt-4 border-t border-white/10">
+                <div class="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer transition-all">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center font-bold shadow-lg">E</div>
+                        <div>
+                            <p class="text-sm font-semibold">Elhadi User</p>
+                            <p class="text-[10px] text-emerald-400">● Online</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-ellipsis text-gray-500"></i>
+                </div>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative h-full">
+            <header class="flex items-center justify-between p-4 glass sticky top-0 z-20 border-b border-white/5">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 p-2 hover:text-white transition-colors">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h1 class="font-bold text-xl tracking-tight">ELHADI <span class="text-indigo-500">AI</span></h1>
+                    <span class="bg-white/10 text-[10px] px-2 py-0.5 rounded-full text-gray-400 font-medium">PRO EDITION</span>
+                </div>
+                <div class="flex gap-4 text-gray-400">
+                    <i class="fa-solid fa-gear hover:text-white cursor-pointer transition-colors"></i>
+                </div>
+            </header>
+
+            <div id="chat-box" class="flex-1 overflow-y-auto p-4 md:px-20 lg:px-48 space-y-8 pb-32">
+                <div id="welcome-screen" class="h-full flex flex-col items-center justify-center text-center space-y-8 mt-20">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-indigo-500 blur-3xl opacity-20 rounded-full"></div>
+                        <div class="w-20 h-20 bg-white text-black rounded-3xl flex items-center justify-center shadow-2xl relative rotate-3">
+                            <i class="fa-solid fa-robot text-4xl"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 id="greeting-text" class="text-3xl font-bold mb-2 text-white">Selamat Datang</h2>
+                        <p class="text-gray-400 max-w-sm">Apa yang bisa saya bantu untuk proyek Anda hari ini?</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl">
+                        <button onclick="quickAction('Bantu buatkan proker organisasi')" class="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 text-left text-sm transition-all">
+                            <i class="fa-solid fa-lightbulb text-yellow-500 mb-2"></i><br>Ide Proker Organisasi...
+                        </button>
+                        <button onclick="quickAction('Buatkan aku tugas kuliah')" class="p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 text-left text-sm transition-all">
+                            <i class="fa-solid fa-code text-blue-500 mb-2"></i><br>Buat Tugas kuliah?...
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 md:px-20 lg:px-48 bg-gradient-to-t from-[#212121] via-[#212121] to-transparent">
+                <div class="max-w-4xl mx-auto relative group">
+                    <textarea 
+                        id="user-input"
+                        rows="1"
+                        class="w-full bg-[#2f2f2f] text-white border border-white/10 rounded-2xl py-4 pl-5 pr-14 focus:ring-2 focus:ring-indigo-500/50 outline-none resize-none transition-all shadow-2xl"
+                        placeholder="Ketik pesan di sini..."
+                        onkeydown="handleKeyPress(event)"
+                    ></textarea>
+                    <button 
+                        id="send-btn"
+                        onclick="processChat()"
+                        class="absolute right-3 bottom-3 bg-indigo-600 text-white w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-500 transition-all shadow-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
+                </div>
+                <p class="text-[10px] text-center text-gray-500 mt-4 uppercase tracking-widest opacity-60">
+                    Sistem Kecerdasan Buatan Terintegrasi © 2026 ELHADI by ikysaputra. All rights reserved.
+                </p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const historyList = document.getElementById('history-list');
+        const sidebar = document.getElementById('sidebar'); // Definisi sidebar
+
+        // PERBAIKAN: Fungsi Toggle Sidebar Mobile
+        function toggleSidebar() {
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('flex');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('flex');
+            }
+        }
+
+        // PERBAIKAN: Menutup sidebar saat area chat diklik (khusus mobile)
+        chatBox.addEventListener('click', () => {
+            if (window.innerWidth < 1024) {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('flex');
+            }
+        });
+
+        // DATABASE RESPONS (UPGRADED)
+        const KNOWLEDGE_BASE = {
+            hualan: {
+                keys: ['minta foto latif', 'apa', 'kelahi kah', 'jui sini', 'ulahkan tugas', 'buatkan tugas', 'p', 'permisi'],
+                responses: [
+                    "nyamannya nyuruh nyuruh",
+                    "ulah surang, koler aku, akm siapa?",
+                    "tarus, lagi ada gawain"
+                ]
+
+            },
+
+                            hualan: {
+                keys: ['iky', 'risky', 'saputra', 'ikysaputra'],
+                responses: [
+                    "iky itu developer utama, otak di balik semua ini.",
+                    "risky itu developer utama, otak di balik semua ini.",
+                    "ikysaputra itu developer utama, otak di balik semua ini."
+                ]
+
+            },
+            gurau: {
+                keys: ['yaallah', 'astagfirullah'],
+                responses: [
+                    "ya allah maaf ulun khilaf, salah inya jua ya allah.",
+                    "ampuni hambamu yang satu ini ya allah.",
+                    "yallah."
+                ]
+
+            },
+            salam: {
+                keys: ['halo', 'hi', 'assalamualaikum', 'assalamualaikum wr.wb', 'salam', 'selamat sore', 'selamat malam'],
+                responses: [
+                    "waalaikumsalam, Elhadi! Ada yang bisa saya bantu hari ini?",
+                    "waalaikumsalam wr.wb, rekan rekan Elhadi!",
+                    "bacot gay"
+                ]
+            },
+            coding: {
+                keys: ['uy', 'salam elhadi', 'bismillah', 'anjay'],
+                responses: [
+                    "waalaikumsalam wr.wb, Elhadi!",
+                    "apa bangsat!",
+                    "salam elhadi juga! Ada yang ku bantui kah?",
+                    "bismillah wara sembahyang kada.",
+                    "anjay anjay, wibu bungul"
+                ]
+            },
+            organisasi: {
+                keys: ['organisasi', 'proker', 'rapat', 'swot', 'program', 'solidaritas', 'pemimpin', 'simpul', 'gemas'],
+                responses: [
+                    "nangis..., kytu ja nangis alay lalu.",
+                    "baik bawa baroko",
+                    "mauk banyak bacot lalu, aku gin sibuk jua",
+                    "bangsat ni kam",
+                    "mauk, baik follow aja ig aku @ikysaputra, kena ku bari kompensasi"
+                ]
+            },
+            desain: {
+                keys: ['goblok', 'tolol', 'minta', 'ikhlas', 'tugas', 'warna', 'ui', 'ux', 'pixel art'],
+                responses: [
+                    "gay bungul",
+                    "bisa jua daus lawan duan",
+                    "takuni pang padil atau spakbor",
+                    "pasti takajut lawan ai ulahan iky"
+                ]
+            }
+        };
+
+        const DEFAULT_RESPONSES = [
+            "coba dipikirkan secara logika.",
+            "koler mikir akan",
+            "takuni pang latipnya langsung kd usah betakun disini, aku gin lapah jua mikir akan.",
+            "nah lah mahual, klo ku parani(datangi).",
+            "nyata ai kam tolol",
+            "nyapah, kytu ja nangis alay lalu.",
+            "tolol dipadahi melunjak, jarku takuni latipnya langsung kd usah betakun disini, aku gin lapah jua mikir akan."
+        ];
+
+        function getResponse(input) {
+            const low = input.toLowerCase();
+            for (let category in KNOWLEDGE_BASE) {
+                if (KNOWLEDGE_BASE[category].keys.some(key => low.includes(key))) {
+                    const variants = KNOWLEDGE_BASE[category].responses;
+                    return variants[Math.floor(Math.random() * variants.length)];
+                }
+            }
+            return DEFAULT_RESPONSES[Math.floor(Math.random() * DEFAULT_RESPONSES.length)];
+        }
+
+        // UI LOGIC
+        function setGreeting() {
+            const hour = new Date().getHours();
+            const greet = hour < 11 ? "Selamat Pagi" : hour < 15 ? "Selamat Siang" : hour < 19 ? "Selamat Sore" : "Selamat Malam";
+            if(document.getElementById('greeting-text')) document.getElementById('greeting-text').innerText = `${greet}, Elhadi!`;
+        }
+        setGreeting();
+
+        userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            sendBtn.disabled = this.value.trim() === "";
+        });
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                processChat();
+            }
+        }
+
+        function processChat() {
+            const message = userInput.value.trim();
+            if (!message) return;
+            if (welcomeScreen) welcomeScreen.style.display = 'none';
+
+            addMessage('user', message);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            sendBtn.disabled = true;
+
+            addToHistory(message);
+            showTypingIndicator();
+
+            setTimeout(() => {
+                removeTypingIndicator();
+                addMessage('assistant', getResponse(message));
+            }, 800);
+            
+            // Tutup sidebar di mobile saat mengirim pesan
+            if (window.innerWidth < 1024) sidebar.classList.add('hidden');
+        }
+
+        function addMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `flex gap-4 md:gap-6 items-start message-appear ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            
+            const avatar = role === 'user' 
+                ? '<div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-user text-xs"></i></div>'
+                : '<div class="w-10 h-10 bg-white text-black rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg"><i class="fa-solid fa-bolt text-xs"></i></div>';
+
+            const bubbleClass = role === 'user'
+                ? 'bg-indigo-600/20 border border-indigo-500/30 px-5 py-3 rounded-2xl rounded-tr-none text-gray-100 max-w-[85%]'
+                : 'flex-1 text-gray-200 leading-relaxed';
+
+            div.innerHTML = `
+                ${avatar}
+                <div class="${bubbleClass}">
+                    ${role === 'assistant' ? '<p class="text-[10px] font-bold text-indigo-400 mb-2 uppercase tracking-tighter">ELHADI AI System</p>' : ''}
+                    <div class="text-sm md:text-base">${text}</div>
+                </div>
+            `;
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        }
+
+        function showTypingIndicator() {
+            const div = document.createElement('div');
+            div.id = 'typing-indicator';
+            div.className = 'flex gap-4 items-center animate-pulse p-2';
+            div.innerHTML = `<div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div><div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div><div class="w-2 h-2 bg-indigo-500 rounded-full typing-dot"></div>`;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+        }
+
+        function addToHistory(msg) {
+            const item = document.createElement('div');
+            item.className = "flex items-center gap-3 px-3 py-2 text-xs text-gray-400 hover:text-white hover:bg-white/5 rounded-xl cursor-pointer transition-all truncate";
+            item.innerHTML = `<i class="fa-regular fa-message opacity-50"></i> ${msg}`;
+            historyList.prepend(item);
+        }
+
+        function quickAction(msg) {
+            userInput.value = msg;
+            userInput.dispatchEvent(new Event('input'));
+            processChat();
+        }
+
+        function newChat() { location.reload(); }
+    </script>
+</body>
+</html>

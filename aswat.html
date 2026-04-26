@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galaxy Quotes</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+
+body{
+margin:0;
+overflow:hidden;
+font-family:Arial;
+background:black;
+color:white;
+}
+
+/* canvas 3D */
+
+canvas{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* judul */
+
+h1{
+text-align:center;
+margin-top:60px;
+font-size:50px;
+color:#00f7ff;
+text-shadow:0 0 20px #00f7ff;
+}
+
+/* card */
+
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:60vh;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:25px;
+padding:40px;
+width:500px;
+text-align:center;
+box-shadow:0 0 40px rgba(0,255,255,0.5);
+transition:0.4s;
+}
+
+.card:hover{
+transform:scale(1.05);
+box-shadow:0 0 80px rgba(0,255,255,0.9);
+}
+
+/* quote */
+
+#quote{
+font-size:24px;
+min-height:80px;
+}
+
+/* tombol */
+
+button{
+margin-top:25px;
+padding:12px 25px;
+border:none;
+border-radius:10px;
+background:#00f7ff;
+color:black;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+transform:scale(1.1);
+}
+
+/* footer */
+
+.footer{
+position:fixed;
+bottom:10px;
+width:100%;
+text-align:center;
+opacity:0.6;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>ELHADI Quotes</h1>
+
+<div class="container">
+
+<div class="card">
+
+<div id="quote"></div>
+
+<button onclick="newQuote()">ganti</button>
+
+</div>
+
+</div>
+
+<div class="footer">
+Quotes ELHADI | by iky s
+</div>
+
+<script>
+
+/* QUOTES */
+
+let quotes=[
+"Kesuksesan dimulai dari keberanian mencoba.",
+"Orang hebat adalah orang yang terus bangkit.",
+"Mimpi besar dimulai dari langkah kecil.",
+"Belajar hari ini untuk masa depan.",
+"Kerja keras mengalahkan bakat.",
+"Jangan takut gagal.",
+"doa tanpa usaha bohong, usaha tanpa doa sombong",
+"jangan lupa sholat"
+];
+
+/* TYPING EFFECT */
+
+let i=0;
+
+function typeText(text){
+
+let el=document.getElementById("quote");
+el.innerHTML="";
+i=0;
+
+function typing(){
+
+if(i<text.length){
+el.innerHTML+=text.charAt(i);
+i++;
+setTimeout(typing,40);
+}
+
+}
+
+typing();
+
+}
+
+typeText(quotes[0]);
+
+function newQuote(){
+
+let random=Math.floor(Math.random()*quotes.length);
+typeText(quotes[random]);
+
+}
+
+/* THREE JS GALAXY */
+
+let scene=new THREE.Scene();
+let camera=new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,1000);
+
+let renderer=new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth,window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+let starsGeometry=new THREE.BufferGeometry();
+let starsCount=3000;
+
+let posArray=new Float32Array(starsCount*3);
+
+for(let i=0;i<starsCount*3;i++){
+
+posArray[i]=(Math.random()-0.5)*2000;
+
+}
+
+starsGeometry.setAttribute('position',new THREE.BufferAttribute(posArray,3));
+
+let starsMaterial=new THREE.PointsMaterial({
+color:0xffffff,
+size:0.7
+});
+
+let starsMesh=new THREE.Points(starsGeometry,starsMaterial);
+scene.add(starsMesh);
+
+camera.position.z=5;
+
+/* ANIMATE */
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+starsMesh.rotation.y+=0.0005;
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+/* PARALLAX MOUSE */
+
+document.addEventListener("mousemove",(event)=>{
+
+let x=(event.clientX/window.innerWidth)-0.5;
+let y=(event.clientY/window.innerHeight)-0.5;
+
+starsMesh.rotation.x=y*0.5;
+starsMesh.rotation.y=x*0.5;
+
+});
+
+document.addEventListener("touchmove",(event)=>{
+
+let touch = event.touches[0];
+
+let x=(touch.clientX/window.innerWidth)-0.5;
+let y=(touch.clientY/window.innerHeight)-0.5;
+
+stars.rotation.x=y;
+stars.rotation.y=x;
+
+});
+
+</script>
+
+</body>
+</html>

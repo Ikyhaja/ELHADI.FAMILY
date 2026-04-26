@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel World 99% - Bot & Double Jump Edition</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #74b9ff; font-family: 'Courier New', Courier, monospace; }
+        canvas { display: block; image-rendering: pixelated; }
+        #ui {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 8px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; border: 3px solid #2f3542;
+        }
+        .slot {
+            width: 50px; height: 50px; border: 2px solid #57606f;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 10px; cursor: pointer; background: #1e272e;
+        }
+        .slot.active { border-color: #f1c40f; background: #485460; transform: scale(1.1); }
+        .slot span { position: absolute; bottom: 2px; right: 4px; font-size: 12px; color: #f1c40f; }
+        #stats { position: fixed; top: 20px; left: 20px; color: white; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="stats">GEMS: <span id="gemCount">0</span><br>BOTS: <span id="botCount">0</span></div>
+    
+    <div id="ui">
+        <div class="slot active" id="s1" onclick="selectItem(1)"><span>1</span>DIRT</div>
+        <div class="slot" id="s2" onclick="selectItem(2)"><span>2</span>GRASS</div>
+        <div class="slot" id="s3" onclick="selectItem(3)"><span>3</span>STONE</div>
+        <div class="slot" id="s5" onclick="selectItem(5)" style="color:#ffa502"><span>R</span>WALL</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const TILE_SIZE = 32;
+        const GRID_W = 100;
+        const GRID_H = 60;
+        const GRAVITY = 0.45;
+        const FRICTION = 0.82;
+
+        let world = [];
+        let particles = [];
+        let drops = [];
+        let bots = [];
+        let selectedTile = 1;
+        let camX = 0, camY = 0;
+        let gems = 0;
+
+        const colors = { 1: '#8d6e63', 2: '#43a047', 3: '#78909c', 4: '#2d3436', 5: '#5d4037' };
+
+        const player = {
+            x: 500, y: 700, w: 22, h: 32,
+            vx: 0, vy: 0, grounded: false,
+            dirLeft: false, punching: 0, jumps: 0,
+            walkCycle: 0,
+            style: { hair: '#222', body: '#ff4757', legs: '#2f3542' }
+        };
+
+        class Bot {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.w = 22; this.h = 32;
+                this.vx = 0; this.vy = 0; this.grounded = false;
+                this.jumps = 0; this.timer = 0; this.walkCycle = 0;
+                this.dirLeft = false;
+                const r = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+                this.style = { hair: r(), body: r(), legs: r() };
+            }
+            update() {
+                this.timer--;
+                if(this.timer <= 0) {
+                    this.vx = (Math.random() - 0.5) * 4;
+                    this.timer = Math.random() * 100 + 50;
+                    if(Math.random() > 0.7 && this.grounded) { this.vy = -9; this.jumps = 1; }
+                }
+                // AI melompat jika menabrak dinding
+                if(Math.abs(this.vx) > 0.1 && !this.grounded && this.jumps < 2 && Math.random() > 0.98) {
+                    this.vy = -8; this.jumps = 2;
+                }
+                this.vy += GRAVITY;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.walkCycle += Math.abs(this.vx) * 0.05;
+                if(this.vx > 0) this.dirLeft = false; else if(this.vx < 0) this.dirLeft = true;
+                checkCollision(this);
+            }
+        }
+
+        function initWorld() {
+            for(let x=0; x<GRID_W; x++) {
+                world[x] = [];
+                for(let y=0; y<GRID_H; y++) {
+                    let fg = 0, bg = 0;
+                    if(y > 35) { fg = 1; bg = 5; }
+                    if(y === 35) fg = 2;
+                    if(y === GRID_H - 1) fg = 4;
+                    world[x][y] = { fg, bg };
+                }
+            }
+            // Spawn Bots
+            bots = [];
+            for(let i=0; i<8; i++) bots.push(new Bot(400 + (i*150), 800));
+            document.getElementById('botCount').innerText = bots.length;
+        }
+
+        function drawHuman(ctx, p) {
+            ctx.save();
+            ctx.translate(p.x + p.w/2, p.y);
+            if(p.dirLeft) ctx.scale(-1, 1);
+            let walkBob = Math.sin(p.walkCycle * 5) * 2;
+            ctx.fillStyle = p.style.hair; ctx.fillRect(-6, walkBob, 12, 10);
+            ctx.fillStyle = '#ffdbac'; ctx.fillRect(-5, 3 + walkBob, 10, 7);
+            ctx.fillStyle = 'black'; ctx.fillRect(2, 5 + walkBob, 2, 3);
+            ctx.fillStyle = p.style.body; ctx.fillRect(-7, 10 + walkBob/2, 14, 12);
+            ctx.fillStyle = '#ffdbac';
+            if(p.punching > 0) ctx.fillRect(6, 12, 10, 4); else ctx.fillRect(5, 12 + walkBob/2, 3, 8);
+            ctx.fillStyle = p.style.legs;
+            ctx.fillRect(-5, 22, 4, 10); ctx.fillRect(1, 22, 4, 10);
+            ctx.restore();
+        }
+
+        function checkCollision(obj) {
+            let left = Math.floor(obj.x / TILE_SIZE), right = Math.floor((obj.x + obj.w) / TILE_SIZE);
+            let top = Math.floor(obj.y / TILE_SIZE), bottom = Math.floor((obj.y + obj.h) / TILE_SIZE);
+            obj.grounded = false;
+            for(let x = left; x <= right; x++) {
+                for(let y = top; y <= bottom; y++) {
+                    if(world[x] && world[x][y].fg > 0) {
+                        let tx = x * TILE_SIZE, ty = y * TILE_SIZE;
+                        if(obj.vy > 0 && obj.y + obj.h > ty && obj.y < ty) {
+                            obj.y = ty - obj.h; obj.vy = 0; obj.grounded = true; obj.jumps = 0;
+                        } else if(obj.vy < 0 && obj.y < ty + TILE_SIZE && obj.y + obj.h > ty + TILE_SIZE) {
+                            obj.y = ty + TILE_SIZE; obj.vy = 0;
+                        }
+                        if(obj.vx > 0 && obj.x + obj.w > tx && obj.x < tx) { obj.x = tx - obj.w; obj.vx = 0; }
+                        else if(obj.vx < 0 && obj.x < tx + TILE_SIZE && obj.x + obj.w > tx + TILE_SIZE) { obj.x = tx + TILE_SIZE; obj.vx = 0; }
+                    }
+                }
+            }
+        }
+
+        window.onkeydown = (e) => {
+            if(!keys[e.code] && (e.code === 'Space' || e.code === 'KeyW' || e.code === 'ArrowUp')) {
+                if(player.grounded) { player.vy = -10; player.jumps = 1; }
+                else if(player.jumps < 2) { player.vy = -9; player.jumps = 2; }
+            }
+            keys[e.code] = true;
+        };
+        const keys = {}; window.onkeyup = (e) => keys[e.code] = false;
+
+        canvas.onmousedown = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const tx = Math.floor((e.clientX - rect.left + camX) / TILE_SIZE), ty = Math.floor((e.clientY - rect.top + camY) / TILE_SIZE);
+            if(!world[tx]) return;
+            player.punching = 8;
+            if(e.button === 0) {
+                if(world[tx][ty].fg > 0 && world[tx][ty].fg !== 4) {
+                    drops.push({x: tx*32+16, y: ty*32+16, vx: (Math.random()-0.5)*4, vy: -5});
+                    world[tx][ty].fg = 0;
+                } else if(world[tx][ty].fg === 0 && selectedTile !== 5) world[tx][ty].fg = selectedTile;
+            } else {
+                world[tx][ty].bg = (world[tx][ty].bg > 0) ? 0 : 5;
+            }
+        };
+
+        function selectItem(id) {
+            selectedTile = id;
+            document.querySelectorAll('.slot').forEach(s => s.classList.remove('active'));
+            document.getElementById('s'+id)?.classList.add('active');
+        }
+
+        function update() {
+            if(keys['KeyA'] || keys['ArrowLeft']) { player.vx = -5; player.dirLeft = true; player.walkCycle += 0.05; }
+            else if(keys['KeyD'] || keys['ArrowRight']) { player.vx = 5; player.dirLeft = false; player.walkCycle += 0.05; }
+            else { player.vx *= FRICTION; player.walkCycle = 0; }
+            player.vy += GRAVITY; player.x += player.vx; player.y += player.vy;
+            if(player.punching > 0) player.punching--;
+            checkCollision(player);
+            bots.forEach(b => b.update());
+            drops.forEach((d, i) => {
+                d.vy += 0.2; d.x += d.vx; d.y += d.vy;
+                let dx = (player.x+11)-d.x, dy = (player.y+16)-d.y, dist = Math.sqrt(dx*dx+dy*dy);
+                if(dist < 60) { d.x += dx*0.15; d.y += dy*0.15; }
+                if(dist < 15) { drops.splice(i, 1); gems += 10; document.getElementById('gemCount').innerText = gems; }
+            });
+            camX += (player.x - canvas.width/2 - camX) * 0.1;
+            camY += (player.y - canvas.height/2 - camY) * 0.1;
+        }
+
+        function draw() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save(); ctx.translate(-camX, -camY);
+            let sX = Math.max(0, Math.floor(camX/32)), eX = Math.min(GRID_W, sX + Math.ceil(canvas.width/32)+1);
+            for(let x=sX; x<eX; x++) {
+                for(let y=0; y<GRID_H; y++) {
+                    let t = world[x][y];
+                    if(t.bg > 0) { ctx.fillStyle = '#3d2b1f'; ctx.fillRect(x*32, y*32, 32, 32); }
+                    if(t.fg > 0) {
+                        ctx.fillStyle = colors[t.fg]; ctx.fillRect(x*32, y*32, 32, 32);
+                        ctx.strokeStyle = 'rgba(0,0,0,0.1)'; ctx.strokeRect(x*32, y*32, 32, 32);
+                    }
+                }
+            }
+            drops.forEach(d => { ctx.fillStyle = '#f1c40f'; ctx.beginPath(); ctx.arc(d.x, d.y, 4, 0, Math.PI*2); ctx.fill(); });
+            bots.forEach(b => drawHuman(ctx, b));
+            drawHuman(ctx, player);
+            ctx.restore(); update(); requestAnimationFrame(draw);
+        }
+        initWorld(); draw();
+    </script>
+</body>
+</html>
