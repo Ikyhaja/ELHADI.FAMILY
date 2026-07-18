@@ -20,6 +20,7 @@
             background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
                         url('hh.jpeg');
             background-position: center;
+            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -28,18 +29,70 @@
             text-align: center;
         }
 
-        /* --- INTRO BLUR ANIMATION --- */
+        /* --- FITUR INTRO VIDEO SCREEN --- */
+        #intro-video-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s cubic-bezier(0.23, 1, 0.32, 1), filter 1s;
+        }
+
+        #intro-video {
+            width: 100%;
+            height: 100%;
+            object-cover: cover;
+            object-fit: cover;
+        }
+
+        /* Tombol Lewati Video di pojok kanan bawah */
+        .btn-skip-video {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 25px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .btn-skip-video:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- MAIN WRAPPER & ANIMATION --- */
         .main-wrapper {
-            animation: introBlur 2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+            opacity: 0;
+            filter: blur(20px);
+            transform: scale(1.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             z-index: 10;
+            transition: opacity 2s cubic-bezier(0.23, 1, 0.32, 1), 
+                        filter 2s cubic-bezier(0.23, 1, 0.32, 1),
+                        transform 2s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        @keyframes introBlur {
-            0% { filter: blur(20px); opacity: 0; transform: scale(1.1); }
-            100% { filter: blur(0); opacity: 1; transform: scale(1); }
+        /* Class untuk memicu efek masuk halaman utama */
+        .main-wrapper.show-content {
+            filter: blur(0);
+            opacity: 1;
+            transform: scale(1);
         }
 
         .logo-main {
@@ -58,6 +111,8 @@
             opacity: 0.6;
             text-transform: uppercase;
             margin-bottom: 80px;
+            max-w: 600px;
+            line-height: 1.6;
         }
 
         /* --- TOMBOL MULAI --- */
@@ -108,22 +163,29 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Fade Out Anim untuk Transisi */
+        /* Fade Out Anim untuk Transisi Akhir */
         .fade-out {
-            opacity: 0;
-            filter: blur(15px);
-            transform: scale(0.9);
+            opacity: 0 !important;
+            filter: blur(15px) !important;
+            transform: scale(0.9) !important;
             transition: 0.8s;
         }
-
     </style>
 </head>
 <body>
 
+    <!-- ================= 1. STRUKTUR INTRO VIDEO ================= -->
+    <div id="intro-video-screen">
+        <!-- Catatan: Silakan ganti 'intro.mp4' dengan file video intro Anda sendiri -->
+        <video id="intro-video" src="PixVerse_V6_Image_Text_540P_The_filming_employ.mp4" autoplay playsinline muted></video>
+        <button class="btn-skip-video" onclick="akhiriIntroVideo()">Lewati Intro</button>
+    </div>
+
+    <!-- ================= 2. KONTEN UTAMA ================= -->
     <div class="main-wrapper" id="content">
         <div class="logo-main">ELH4D1<span>.FAMILY</span></div>
         <div class="sub-tag">Sebelum anda menjelajah lebih luas terhadap komunitas ini,
-             anda diwajibkan untuk terhubung keserver</div>
+             anda diwajibkan untuk terhubung ke server</div>
         
         <button class="btn-start" onclick="triggerLoading()">Mulai</button>
         
@@ -132,6 +194,7 @@
         </p>
     </div>
 
+    <!-- ================= 3. LOADING OVERLAY ================= -->
     <div id="loading-screen">
         <div class="spinner"></div>
         <div style="letter-spacing: 8px; font-size: 0.8rem; font-weight: 700; color: var(--accent);">
@@ -139,20 +202,44 @@
         </div>
     </div>
 
+    <!-- ================= 4. LOGIKA TRANSISI ================= -->
     <script>
-        function triggerLoading() {
-            // 1. Efek Blur/Fade Out pada konten utama
-            document.getElementById('content').classList.add('fade-out');
+        const videoScreen = document.getElementById('intro-video-screen');
+        const videoElement = document.getElementById('intro-video');
+        const mainContent = document.getElementById('content');
 
-            // 2. Munculkan Loading Screen setelah sedikit delay
+        // Fungsi menghilangkan intro video dan memunculkan konten utama
+        function akhiriIntroVideo() {
+            // Hilangkan layar video dengan transisi pudar (fade out)
+            videoScreen.style.opacity = '0';
+            videoScreen.style.filter = 'blur(10px)';
+            videoScreen.style.pointerEvents = 'none';
+
+            // Bersihkan elemen video dari memori setelah transisi selesai (1 detik)
+            setTimeout(() => {
+                videoElement.pause();
+                videoScreen.remove();
+                
+                // Picu animasi blur-in pada halaman utama Anda
+                mainContent.classList.add('show-content');
+            }, 1000);
+        }
+
+        // OTOMATIS: Jika durasi video intro habis, masuk ke halaman utama tanpa diklik
+        videoElement.addEventListener('ended', () => {
+            akhiriIntroVideo();
+        });
+
+        // Logika transisi tombol 'Mulai' lama ke 'login.html'
+        function triggerLoading() {
+            mainContent.classList.add('fade-out');
+
             setTimeout(() => {
                 document.getElementById('loading-screen').style.display = 'flex';
                 
-                // 3. Pindah ke halaman login setelah loading selesai
                 setTimeout(() => {
-                    // GANTI 'login.html' sesuai nama file login Anda
                     window.location.href = "login.html"; 
-                }, 2000); // Durasi loading 2 detik
+                }, 2000);
 
             }, 600);
         }
