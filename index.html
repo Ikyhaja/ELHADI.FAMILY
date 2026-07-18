@@ -44,7 +44,6 @@
         #intro-video {
             width: 100%;
             height: 100%;
-            object-cover: cover;
             object-fit: cover;
         }
 
@@ -66,12 +65,41 @@
             border-radius: 4px;
             transition: 0.3s;
             z-index: 10;
+            display: none; /* Muncul setelah overlay pembuka diklik */
         }
 
         .btn-skip-video:hover {
             border-color: var(--accent);
             color: var(--accent);
             background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- OVERLAY UNTUK MENGAKTIFKAN SUARA (ANTI-BLOCK BROWSER) --- */
+        #audio-unlocker {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.5s;
+        }
+
+        .pulse-text {
+            font-size: 0.9rem;
+            letter-spacing: 6px;
+            font-weight: 700;
+            color: var(--accent);
+            animation: textPulse 1.5s infinite ease-in-out;
+            text-transform: uppercase;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); text-shadow: 0 0 15px rgba(0, 255, 136, 0.6); }
         }
 
         /* --- MAIN WRAPPER & ANIMATION --- */
@@ -176,9 +204,14 @@
 
     <!-- ================= 1. STRUKTUR INTRO VIDEO ================= -->
     <div id="intro-video-screen">
-        <!-- Catatan: Silakan ganti 'intro.mp4' dengan file video intro Anda sendiri -->
-        <video id="intro-video" src="PixVerse_V6_Image_Text_540P_The_filming_employ.mp4" autoplay playsinline muted></video>
-        <button class="btn-skip-video" onclick="akhiriIntroVideo()">Lewati Intro</button>
+        <!-- Overlay awal agar interaksi klik memicu suara video -->
+        <div id="audio-unlocker" onclick="putarDenganSuara()">
+            <div class="pulse-text">Klik untuk Masuk & Putar Video</div>
+        </div>
+
+        <!-- Atribut 'muted' dihapus agar bisa mengeluarkan suara setelah di-trigger javascript -->
+        <video id="intro-video" src="PixVerse_V6_Image_Text_540P_The_filming_employ.mp4" playsinline></video>
+        <button class="btn-skip-video" id="skipBtn" onclick="akhiriIntroVideo()">Lewati Intro</button>
     </div>
 
     <!-- ================= 2. KONTEN UTAMA ================= -->
@@ -207,20 +240,33 @@
         const videoScreen = document.getElementById('intro-video-screen');
         const videoElement = document.getElementById('intro-video');
         const mainContent = document.getElementById('content');
+        const unlocker = document.getElementById('audio-unlocker');
+        const skipBtn = document.getElementById('skipBtn');
+
+        // Fungsi pemicu suara dan putar saat overlay diklik
+        function putarDenganSuara() {
+            unlocker.style.opacity = '0';
+            setTimeout(() => {
+                unlocker.remove();
+                skipBtn.style.display = 'block'; // Tampilkan tombol lewati intro
+            }, 500);
+
+            videoElement.muted = false; // Buka suara video
+            videoElement.volume = 1.0;  // Set volume maksimal
+            videoElement.play().catch(error => {
+                console.log("Playback gagal terpicu:", error);
+            });
+        }
 
         // Fungsi menghilangkan intro video dan memunculkan konten utama
         function akhiriIntroVideo() {
-            // Hilangkan layar video dengan transisi pudar (fade out)
             videoScreen.style.opacity = '0';
             videoScreen.style.filter = 'blur(10px)';
             videoScreen.style.pointerEvents = 'none';
 
-            // Bersihkan elemen video dari memori setelah transisi selesai (1 detik)
             setTimeout(() => {
                 videoElement.pause();
                 videoScreen.remove();
-                
-                // Picu animasi blur-in pada halaman utama Anda
                 mainContent.classList.add('show-content');
             }, 1000);
         }
@@ -230,7 +276,7 @@
             akhiriIntroVideo();
         });
 
-        // Logika transisi tombol 'Mulai' lama ke 'login.html'
+        // Logika transisi tombol 'Mulai' ke 'login.html'
         function triggerLoading() {
             mainContent.classList.add('fade-out');
 
