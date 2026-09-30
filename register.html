@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ELHADI | Buat Akun</title>
+<style>
+:root{--accent:#00ff88;--error:#ff4d4d}*{box-sizing:border-box;font-family:Inter,Arial,sans-serif}
+body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),url('hh.jpeg') center/cover;color:#fff}
+.card{position:relative;width:400px;padding:45px 40px;background:rgba(255,255,255,.05);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,.1);box-shadow:0 25px 50px rgba(0,0,0,.5)}
+.card:before,.card:after{content:"";position:absolute;width:15px;height:15px;border:2px solid var(--accent)}.card:before{top:0;left:0;border-right:0;border-bottom:0}.card:after{bottom:0;right:0;border-left:0;border-top:0}
+h1{text-align:center;font-size:1.8rem;letter-spacing:5px;margin:0 0 5px}h1 span{color:var(--accent)}
+.sub{text-align:center;color:rgba(255,255,255,.4);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+label{display:block;font-size:.65rem;color:rgba(255,255,255,.55);margin-bottom:7px;letter-spacing:1px}input{width:100%;padding:14px;margin-bottom:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);outline:0;color:#fff}input:focus{border-color:var(--accent)}
+button{width:100%;padding:15px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-weight:700;letter-spacing:2px;cursor:pointer}button:hover{background:var(--accent);color:#000}button:disabled{opacity:.5}
+#msg{text-align:center;min-height:20px;font-size:.7rem;font-weight:bold;margin-bottom:10px;line-height:1.5}.bottom{text-align:center;margin-top:25px;font-size:.65rem;color:rgba(255,255,255,.4)}a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body><div class="card">
+<h1>ELH4D1<span>.FAMILY</span></h1><div class="sub">Pendaftaran Akun</div><div id="msg"></div>
+<form id="registerForm">
+<label>ID PENGGUNA</label><input id="username" required minlength="3" maxlength="30" autocomplete="username" placeholder="Contoh: elhadi123">
+<label>EMAIL</label><input id="email" type="email" required maxlength="150" autocomplete="email" placeholder="nama@email.com">
+<label>KATA SANDI</label><input id="password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter">
+<label>ULANGI KATA SANDI</label><input id="confirm" type="password" required minlength="6" autocomplete="new-password" placeholder="Ulangi kata sandi">
+<button id="btn" type="submit">BUAT AKUN</button>
+</form>
+<div class="bottom">Sudah punya akun? <a href="login.html">MASUK</a></div>
+</div>
+<script src="api-config.js"></script>
+<script>
+const form=document.getElementById('registerForm'),msg=document.getElementById('msg'),btn=document.getElementById('btn');
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const username=document.getElementById('username').value.trim(), email=document.getElementById('email').value.trim(), password=document.getElementById('password').value, confirm=document.getElementById('confirm').value;
+ if(password!==confirm){msg.style.color='var(--error)';msg.textContent='Kata sandi tidak sama.';return}
+ btn.disabled=true;btn.textContent='MEMBUAT AKUN...';
+ try{
+  const r=await fetch(API_BASE_URL+'/register.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,email,password})});
+  const data=await r.json();
+  if(!r.ok||!data.success)throw new Error(data.message||'Pendaftaran gagal.');
+  msg.style.color='var(--accent)';msg.textContent='Akun berhasil dibuat. Mengalihkan...';
+  setTimeout(()=>location.href='login.html',1000);
+ }catch(err){msg.style.color='var(--error)';msg.textContent=err.message;btn.disabled=false;btn.textContent='BUAT AKUN'}
+});
+</script>
+</body>
+</html>
